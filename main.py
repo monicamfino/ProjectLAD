@@ -1,10 +1,16 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
+
 
 # Carregar o dataset (substitua pelo caminho correto do arquivo)
 df = pd.read_csv("creditcard.csv")
+
+def save_and_show_plot(filename):
+    plt.savefig(f'plots/{filename}', bbox_inches='tight')
+    plt.show()
+
 
 df = df.dropna()
 df = df.fillna(df.mean())
@@ -39,7 +45,8 @@ print(df.corr())
 plt.figure(figsize=(10, 8))
 sns.heatmap(df.corr(), cmap="coolwarm", annot=False)
 plt.title("Matriz de Correlação")
-plt.show()
+save_and_show_plot("matriz_de_correlação.png")
+
 
 # Separando os dados
 fraud = df[df["Class"] == 1]
@@ -49,35 +56,29 @@ legit = df[df["Class"] == 0]
 print("Média do valor da transação - Fraude:", fraud["Amount"].mean())
 print("Média do valor da transação - Legítima:", legit["Amount"].mean())
 
-# Comparando a distribuição dos valores de transação
-plt.figure(figsize=(10,5))
-sns.histplot(fraud["Amount"], bins=50, color="red", label="Fraude", kde=True)
-sns.histplot(legit["Amount"], bins=50, color="blue", label="Legítima", kde=True)
+plt.figure(figsize=(12, 6))
+
+# Gráficos com transparência e normalização
+sns.histplot(fraud["Amount"], bins=50, color="red", label="Fraude", kde=True, alpha=0.6, stat="density")
+sns.histplot(legit["Amount"], bins=50, color="blue", label="Legítima", kde=True, alpha=0.6, stat="density")
+
+# Escala logarítmica no eixo x
+plt.xscale("log")
+
+# Linhas de mediana para melhor contexto
+plt.axvline(fraud["Amount"].median(), color="red", linestyle="dashed", label="Mediana Fraude")
+plt.axvline(legit["Amount"].median(), color="blue", linestyle="dashed", label="Mediana Legítima")
+
+# Rótulos e título aprimorados
+plt.xlabel("Valor da Transação (Escala Log)")
+plt.ylabel("Densidade")
+plt.title("Distribuição dos Valores de Transação (Fraude vs Legítima)")
+
+# Ajustando os limites dos eixos
+plt.xlim(1, 10000)  # Ajuste do eixo X
+plt.ylim(0, 0.03)   # Ajuste do eixo Y
+
 plt.legend()
-plt.title("Distribuição dos valores de transação")
-plt.show()
 
-df["Rolling_Mean_Amount"] = df["Amount"].rolling(window=5).mean()
-
-df["Std_Amount"] = df["Amount"].rolling(window=5).std()
-
-df["Hour"] = (df["Time"] // 3600) % 24  # Convertendo o tempo para horas do dia
-
-df["Amount_Category"] = pd.cut(df["Amount"], bins=[0, 10, 50, 100, 500, 5000, np.inf],
-                               labels=["Very Low", "Low", "Medium", "High", "Very High", "Extreme"])
-
-df["Delta_Amount"] = df["Amount"].diff()
-
-# Comparação da distribuição do valor da transação por fraude e não fraude
-plt.figure(figsize=(10,5))
-sns.boxplot(x=df["Class"], y=df["Amount"])
-plt.title("Distribuição do Valor da Transação por Classe (0 = Legítima, 1 = Fraude)")
-plt.show()
-
-# Visualizar a média do valor das transações ao longo do tempo
-plt.figure(figsize=(10,5))
-sns.lineplot(data=df, x="Hour", y="Amount", hue="Class", estimator="mean")
-plt.title("Média do Valor da Transação ao Longo do Dia")
-plt.show()
-
-
+# Salvar e exibir gráfico
+save_and_show_plot("distribuicao_valores_transacao_ajustada.png")
