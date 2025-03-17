@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 # Carregar o dataset (substitua pelo caminho correto do arquivo)
-df = pd.read_csv("creditcard.csv")
+df = pd.read_csv("/Users/paulobrochado/Downloads/creditcard.csv")
 
 def save_and_show_plot(filename):
     plt.savefig(f'plots/{filename}', bbox_inches='tight')
@@ -81,4 +81,4 @@ plt.ylim(0, 0.03)   # Ajuste do eixo Y
 plt.legend()
 
 # Salvar e exibir gráfico
-save_and_show_plot("distribuicao_valores_transacao_ajustada.png")
+save_and_show_plot("distribuicao_valores_transacao.png")
