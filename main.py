@@ -1,84 +1,47 @@
-import matplotlib.pyplot as plt
+import streamlit as st
 import pandas as pd
-import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
 
+# Configuração da página
+st.set_page_config(page_title="Análise de Fraude em Cartões", layout="wide")
 
-# Carregar o dataset (substitua pelo caminho correto do arquivo)
-df = pd.read_csv("/Users/paulobrochado/Downloads/creditcard.csv")
+# Carregar o dataset
+@st.cache_data
+def load_data():
+    df = pd.read_csv("creditcard.csv")  # Substitua pelo caminho do seu dataset
+    return df
 
-def save_and_show_plot(filename):
-    plt.savefig(f'plots/{filename}', bbox_inches='tight')
-    plt.show()
+df = load_data()
 
+# Título do aplicativo
+st.title("🔍 Análise de Fraude em Cartões de Crédito")
 
-df = df.dropna()
-df = df.fillna(df.mean())
+# Mostrar dataset
+st.subheader("Visualizando os primeiros registros do dataset")
+st.dataframe(df.head())
 
+# Criar gráfico de barras mostrando o número de transações legítimas vs. fraudulentas
+st.subheader("Distribuição de Transações")
+fraud_count = df["Class"].value_counts()
+st.bar_chart(fraud_count)
 
-# Exibir as primeiras linhas
-print(df.head())
+# Criar um histograma da distribuição do valor das transações
+st.subheader("Distribuição do Valor das Transações")
+fig, ax = plt.subplots(figsize=(10, 5))
+sns.histplot(df["Amount"], bins=50, kde=True, ax=ax)
+st.pyplot(fig)
 
-# Calcular média e mediana das principais variáveis
-print("Média:")
-print(df.mean())
+# Criar um filtro para exibir apenas transações fraudulentas
+st.subheader("Filtrar Transações Fraudulentas")
+if st.checkbox("Mostrar apenas fraudes"):
+    st.dataframe(df[df["Class"] == 1])
 
-print("\nMediana:")
-print(df.median())
+# Criar um gráfico da média do valor das transações ao longo do tempo
+st.subheader("Média do Valor das Transações ao Longo do Dia")
+df["Hour"] = (df["Time"] // 3600) % 24  # Converter tempo para horas
+fig, ax = plt.subplots(figsize=(10, 5))
+sns.lineplot(data=df, x="Hour", y="Amount", hue="Class", estimator="mean", ax=ax)
+st.pyplot(fig)
 
-# Variância e desvio padrão
-print("\nVariância:")
-print(df.var())
-
-print("\nDesvio Padrão:")
-print(df.std())
-
-# Matriz de covariância
-print("\nMatriz de Covariância:")
-print(df.cov())
-
-# Matriz de correlação
-print("\nMatriz de Correlação:")
-print(df.corr())
-
-# Visualizar a matriz de correlação
-plt.figure(figsize=(10, 8))
-sns.heatmap(df.corr(), cmap="coolwarm", annot=False)
-plt.title("Matriz de Correlação")
-save_and_show_plot("matriz_de_correlação.png")
-
-
-# Separando os dados
-fraud = df[df["Class"] == 1]
-legit = df[df["Class"] == 0]
-
-# Comparando a média do valor da transação
-print("Média do valor da transação - Fraude:", fraud["Amount"].mean())
-print("Média do valor da transação - Legítima:", legit["Amount"].mean())
-
-plt.figure(figsize=(12, 6))
-
-# Gráficos com transparência e normalização
-sns.histplot(fraud["Amount"], bins=50, color="red", label="Fraude", kde=True, alpha=0.6, stat="density")
-sns.histplot(legit["Amount"], bins=50, color="blue", label="Legítima", kde=True, alpha=0.6, stat="density")
-
-# Escala logarítmica no eixo x
-plt.xscale("log")
-
-# Linhas de mediana para melhor contexto
-plt.axvline(fraud["Amount"].median(), color="red", linestyle="dashed", label="Mediana Fraude")
-plt.axvline(legit["Amount"].median(), color="blue", linestyle="dashed", label="Mediana Legítima")
-
-# Rótulos e título aprimorados
-plt.xlabel("Valor da Transação (Escala Log)")
-plt.ylabel("Densidade")
-plt.title("Distribuição dos Valores de Transação (Fraude vs Legítima)")
-
-# Ajustando os limites dos eixos
-plt.xlim(1, 10000)  # Ajuste do eixo X
-plt.ylim(0, 0.03)   # Ajuste do eixo Y
-
-plt.legend()
-
-# Salvar e exibir gráfico
-save_and_show_plot("distribuicao_valores_transacao.png")
+st.write("🚀 *Dashboard criado com Streamlit!*")
