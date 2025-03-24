@@ -24,11 +24,20 @@ def load_data():
     df = pd.read_csv("creditcard.csv")
     df = df.dropna()
     df["Hour"] = (df["Time"] // 3600) % 24
+
+
+     # Criar novas features
     df["Rolling_Mean_Amount"] = df["Amount"].rolling(window=5).mean()
     df["Std_Amount"] = df["Amount"].rolling(window=5).std()
     df["Delta_Amount"] = df["Amount"].diff()
     df["Amount_Category"] = pd.cut(df["Amount"], bins=[0, 10, 50, 100, 500, 5000, np.inf],
-                                   labels=["Very Low", "Low", "Medium", "High", "Very High", "Extreme"])
+                                    labels=["Very Low", "Low", "Medium", "High", "Very High", "Extreme"])
+    df["Time_Diff"] = df["Time"].diff()
+    df["Transacao_Noturna"] = df["Hour"].apply(lambda x: 1 if x < 6 else 0)
+    df["Num_Transacoes_1h"] = df.groupby("Hour")["Time"].transform("count")
+    df["Freq_Valor_Transacao"] = df.groupby("Amount")["Amount"].transform("count")
+    df["Delta_Media_Valor"] = df["Amount"] - df["Rolling_Mean_Amount"]
+    
     np.random.seed(42)
     df["Region"] = np.random.choice(["Norte", "Sul", "Leste", "Oeste", "Centro"], size=len(df))
     return df
@@ -251,6 +260,48 @@ elif page == "📂 Relatórios e Configurações":
         # 📊 Visualizar os dados antes do download
         st.write("🔍 **Pré-visualização dos Dados:**")
         st.dataframe(df_export.head(10))
+
+         # 📊 Visualizar os dados antes do download
+        st.write("🔍 **Pré-visualização dos Dados:**")
+        st.dataframe(df_export.head(10))
+
+        # 📊 Distribuição de Categorias de Montante
+        st.subheader("📊 Distribuição de Categorias de Montante")
+        fig, ax = plt.subplots(figsize=(8, 4))
+        df["Amount_Category"].value_counts().plot(kind="bar", color="skyblue", ax=ax)
+        ax.set_xlabel("Categoria de Montante")
+        ax.set_ylabel("Número de Transações")
+        st.pyplot(fig)
+
+        # 🌙 Proporção de Transações Noturnas
+        st.subheader("🌙 Proporção de Transações Noturnas")
+        transacao_noturna = df["Transacao_Noturna"].value_counts(normalize=True) * 100
+        st.write(f"**Transações Noturnas:** {transacao_noturna[1]:.2f}%")
+        st.write(f"**Transações Diurnas:** {transacao_noturna[0]:.2f}%")
+
+        # 📈 Média Móvel do Montante
+        st.subheader("📈 Média Móvel do Montante")
+        fig, ax = plt.subplots(figsize=(10, 5))
+        df["Rolling_Mean_Amount"].plot(ax=ax, color="blue", label="Média Móvel (5 Transações)")
+        ax.set_xlabel("Índice")
+        ax.set_ylabel("Montante ($)")
+        ax.legend()
+        st.pyplot(fig)
+
+        # ⏱️ Diferença de Tempo entre Transações
+        st.subheader("⏱️ Diferença de Tempo entre Transações")
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.histplot(df["Time_Diff"].dropna(), bins=30, kde=True, color="purple", ax=ax)
+        ax.set_xlabel("Diferença de Tempo (segundos)")
+        ax.set_ylabel("Frequência")
+        st.pyplot(fig)
+
+        # 🔥 Mapa de Calor: Número de Transações por Hora e Região
+        st.subheader("🔥 Mapa de Calor: Número de Transações por Hora e Região")
+        heatmap_data = df.pivot_table(index="Region", columns="Hour", values="Num_Transacoes_1h", aggfunc="mean", fill_value=0)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.heatmap(heatmap_data, cmap="Blues", linewidths=0.5, ax=ax)
+        st.pyplot(fig)
 
         # 📂 Opções de Exportação
         formato = st.selectbox("Escolha o formato do relatório:", ["CSV", "Excel"])
