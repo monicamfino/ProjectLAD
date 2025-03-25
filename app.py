@@ -25,19 +25,18 @@ def load_data():
     df = df.dropna()
     df["Hour"] = (df["Time"] // 3600) % 24
 
-
-     # Criar novas features
+    # Criar novas features
     df["Rolling_Mean_Amount"] = df["Amount"].rolling(window=5).mean()
     df["Std_Amount"] = df["Amount"].rolling(window=5).std()
     df["Delta_Amount"] = df["Amount"].diff()
     df["Amount_Category"] = pd.cut(df["Amount"], bins=[0, 10, 50, 100, 500, 5000, np.inf],
-                                    labels=["Very Low", "Low", "Medium", "High", "Very High", "Extreme"])
+                                   labels=["Very Low", "Low", "Medium", "High", "Very High", "Extreme"])
     df["Time_Diff"] = df["Time"].diff()
     df["Transacao_Noturna"] = df["Hour"].apply(lambda x: 1 if x < 6 else 0)
     df["Num_Transacoes_1h"] = df.groupby("Hour")["Time"].transform("count")
     df["Freq_Valor_Transacao"] = df.groupby("Amount")["Amount"].transform("count")
     df["Delta_Media_Valor"] = df["Amount"] - df["Rolling_Mean_Amount"]
-    
+
     np.random.seed(42)
     df["Region"] = np.random.choice(["Norte", "Sul", "Leste", "Oeste", "Centro"], size=len(df))
     return df
@@ -53,7 +52,8 @@ page = st.sidebar.radio("Navegação", [
     "🏠 Visão Geral",
     "📊 Análise de Fraudes",
     "📈 Estatísticas",
-    "📂 Relatórios e Configurações"
+    "📂 Relatórios e Configurações",
+    "🧭 Navegação"
 ])
 
 # 📌 Página Inicial - Visão Geral
@@ -94,9 +94,9 @@ if page == "🏠 Visão Geral":
     st.subheader("🛠️ Variáveis Utilizadas no Modelo e no CSV")
     variaveis_combinadas = pd.DataFrame({
         "Variável": [
-            "Time", "V1-V28", "Amount", "Class", 
-            "Hour", "Rolling_Mean_Amount", "Std_Amount", "Delta_Amount", 
-            "Amount_Category", "Time_Diff", "Transacao_Noturna", 
+            "Time", "V1-V28", "Amount", "Class",
+            "Hour", "Rolling_Mean_Amount", "Std_Amount", "Delta_Amount",
+            "Amount_Category", "Time_Diff", "Transacao_Noturna",
             "Num_Transacoes_1h", "Freq_Valor_Transacao", "Delta_Media_Valor", "Region"
         ],
         "Descrição": [
@@ -162,7 +162,7 @@ elif page == "📊 Análise de Fraudes":
     fraude_filtrada = fraud[
         (fraud["Hour"].between(hora_selecionada[0], hora_selecionada[1])) &
         (fraud["Region"].isin(regiao_selecionada))
-    ]
+        ]
 
     # 📊 Gráfico: Fraudes ao Longo do Dia
     st.subheader("📆 Distribuição de Fraudes por Horário")
@@ -303,7 +303,7 @@ elif page == "📂 Relatórios e Configurações":
         st.write("🔍 **Pré-visualização dos Dados:**")
         st.dataframe(df_export.head(10))
 
-         # 📊 Visualizar os dados antes do download
+        # 📊 Visualizar os dados antes do download
         st.write("🔍 **Pré-visualização dos Dados:**")
         st.dataframe(df_export.head(10))
 
@@ -340,7 +340,8 @@ elif page == "📂 Relatórios e Configurações":
 
         # 🔥 Mapa de Calor: Número de Transações por Hora e Região
         st.subheader("🔥 Mapa de Calor: Número de Transações por Hora e Região")
-        heatmap_data = df.pivot_table(index="Region", columns="Hour", values="Num_Transacoes_1h", aggfunc="mean", fill_value=0)
+        heatmap_data = df.pivot_table(index="Region", columns="Hour", values="Num_Transacoes_1h", aggfunc="mean",
+                                      fill_value=0)
         fig, ax = plt.subplots(figsize=(10, 6))
         sns.heatmap(heatmap_data, cmap="Blues", linewidths=0.5, ax=ax)
         st.pyplot(fig)
@@ -378,5 +379,22 @@ elif page == "📂 Relatórios e Configurações":
             st.write(f"- **Método de Detecção:** {metodo_analise}")
             st.write(f"- **Regiões Monitoradas:** {', '.join(selected_region)}")
 
+# Nova página: Navegação
+if page == "🧭 Navegação":
+    st.markdown('<p class="big-font">🧭 Navegação</p>', unsafe_allow_html=True)
 
+    st.subheader("📊 Dashboard de Variáveis")
 
+    # Exibir as variáveis e seus valores
+    variaveis_valores = {
+        "Total de Transações": len(df),
+        "Transações Fraudulentas": df["Class"].sum(),
+        "Taxa de Fraude (%)": (df["Class"].sum() / len(df)) * 100,
+        "Valor Médio das Transações ($)": df["Amount"].mean(),
+        "Valor Máximo das Transações ($)": df["Amount"].max(),
+        "Valor Mínimo das Transações ($)": df["Amount"].min(),
+        "Desvio Padrão do Valor das Transações ($)": df["Amount"].std()
+    }
+    
+    for variavel, valor in variaveis_valores.items():
+        st.metric(label=variavel, value=f"{valor:,.2f}" if isinstance(valor, float) else f"{valor:,}")
