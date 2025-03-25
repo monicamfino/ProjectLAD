@@ -237,6 +237,19 @@ elif page == "📈 Estatísticas":
     sns.heatmap(df_numeric.corr(), cmap="coolwarm", annot=False, ax=ax)
     st.pyplot(fig)
 
+    # Explicação sobre as correlações
+    st.write("""
+    📌 **Análise das Correlações:**
+    - **Correlações Positivas Fortes:**
+    - Rolling_Mean_Amount e Std_Amount: Correlação positiva forte
+    - Num_Transacoes_1h e algumas variáveis V: Correlações positivas moderadas
+
+    - **Correlações Negativas Importantes:**
+    - Delta_Amount e Rolling_Mean_Amount: Correlação negativa moderada
+    - Time_Diff e algumas variáveis V: Correlações negativas moderadas
+    - Delta_Media_Valor e Amount: Diferenças em relação à média tendem a ser inversas ao valor total da transação
+    """)
+
     # 📊 Matriz de Covariância
     st.subheader("📊 Matriz de Covariância")
     st.write(df_numeric.cov())
