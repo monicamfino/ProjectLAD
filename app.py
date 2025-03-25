@@ -90,6 +90,35 @@ if page == "🏠 Visão Geral":
     col2.metric("⚠ Transações Fraudulentas", f"{transacoes_fraudulentas:,}")
     col3.metric("📉 Taxa de Fraude", f"{taxa_fraude:.2f} %")
 
+    # 🛠️ Variáveis Utilizadas no Modelo e no CSV
+    st.subheader("🛠️ Variáveis Utilizadas no Modelo e no CSV")
+    variaveis_combinadas = pd.DataFrame({
+        "Variável": [
+            "Time", "V1-V28", "Amount", "Class", 
+            "Hour", "Rolling_Mean_Amount", "Std_Amount", "Delta_Amount", 
+            "Amount_Category", "Time_Diff", "Transacao_Noturna", 
+            "Num_Transacoes_1h", "Freq_Valor_Transacao", "Delta_Media_Valor", "Region"
+        ],
+        "Descrição": [
+            "Tempo decorrido desde a primeira transação no dataset.",
+            "Variáveis anonimizadas resultantes de PCA (28 componentes principais).",
+            "Montante da transação.",
+            "Classe da transação (0: Legítima, 1: Fraudulenta).",
+            "Hora do dia em que a transação ocorreu.",
+            "Média móvel do valor da transação (janela de 5 transações).",
+            "Desvio padrão do valor da transação (janela de 5 transações).",
+            "Diferença entre o valor atual e o valor anterior da transação.",
+            "Categoria do valor da transação (ex.: Muito Baixo, Baixo, Médio, etc.).",
+            "Diferença de tempo entre transações consecutivas.",
+            "Indica se a transação ocorreu durante a noite (1: Sim, 0: Não).",
+            "Número de transações realizadas na mesma hora.",
+            "Frequência de transações com o mesmo valor.",
+            "Diferença entre o valor da transação e a média móvel.",
+            "Região geográfica associada à transação."
+        ]
+    })
+    st.table(variaveis_combinadas)
+
     # 🛡️ Como Prevenir Fraudes?
     st.subheader("🛡️ Como Prevenir Fraudes?")
     st.write("""
