@@ -53,7 +53,7 @@ page = st.sidebar.radio("Navegação", [
     "📊 Análise de Fraudes",
     "📈 Estatísticas",
     "📂 Relatórios e Configurações",
-    "🧭 Navegação"
+    "🧭 Dados"
 ])
 
 # 📌 Página Inicial - Visão Geral
@@ -379,9 +379,10 @@ elif page == "📂 Relatórios e Configurações":
             st.write(f"- **Método de Detecção:** {metodo_analise}")
             st.write(f"- **Regiões Monitoradas:** {', '.join(selected_region)}")
 
-# Nova página: Navegação
-if page == "🧭 Navegação":
-    st.markdown('<p class="big-font">🧭 Navegação</p>', unsafe_allow_html=True)
+
+# Nova página: Dados
+if page == "🧭 Dados":
+    st.markdown('<p class="big-font">🧭 Dados</p>', unsafe_allow_html=True)
 
     st.subheader("📊 Dashboard de Variáveis")
 
@@ -395,6 +396,85 @@ if page == "🧭 Navegação":
         "Valor Mínimo das Transações ($)": df["Amount"].min(),
         "Desvio Padrão do Valor das Transações ($)": df["Amount"].std()
     }
-    
+
     for variavel, valor in variaveis_valores.items():
         st.metric(label=variavel, value=f"{valor:,.2f}" if isinstance(valor, float) else f"{valor:,}")
+
+    # Adicionar scope das variáveis
+    st.subheader("📄 Scope das Variáveis")
+
+    variaveis_escopo = {
+        "Time": "Tempo decorrido desde a primeira transação no dataset.",
+        "Vx": "Variáveis anonimizadas resultantes de PCA (28 componentes principais).",
+        "Amount": "Montante da transação.",
+        "Class": "Classe da transação (0: Legítima, 1: Fraudulenta).",
+        "Hour": "Hora do dia em que a transação ocorreu.",
+        "Rolling_Mean_Amount": "Média móvel do valor da transação (janela de 5 transações).",
+        "Std_Amount": "Desvio padrão do valor da transação (janela de 5 transações).",
+        "Delta_Amount": "Diferença entre o valor atual e o valor anterior da transação.",
+        "Amount_Category": "Categoria do valor da transação (ex.: Muito Baixo, Baixo, Médio, etc.).",
+        "Time_Diff": "Diferença de tempo entre transações consecutivas.",
+        "Transacao_Noturna": "Indica se a transação ocorreu durante a noite (1: Sim, 0: Não).",
+        "Num_Transacoes_1h": "Número de transações realizadas na mesma hora.",
+        "Freq_Valor_Transacao": "Frequência de transações com o mesmo valor.",
+        "Delta_Media_Valor": "Diferença entre o valor da transação e a média móvel.",
+        "Region": "Região geográfica associada à transação."
+    }
+
+    for variavel, descricao in variaveis_escopo.items():
+        st.write(f"**{variavel}:** {descricao}")
+
+    # Adicionar gráficos de valores mínimo e máximo
+    st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
+
+    # Agregar dados de V1-V28 em Vx
+    df["Vx"] = df[[f"V{i}" for i in range(1, 29)]].sum(axis=1)
+    min_vals = df[["Vx", "Hour", "Time_Diff"]].min()
+    max_vals = df[["Vx", "Hour", "Time_Diff"]].max()
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.bar(min_vals.index, min_vals.values, color="blue", label="Min")
+    ax.bar(max_vals.index, max_vals.values, color="red", label="Max", alpha=0.7)
+    ax.set_title("Valores Mínimo e Máximo de Vx, Hour e Time_Diff")
+    ax.set_ylabel("Valores")
+    ax.legend()
+    plt.xticks(rotation=90)
+    st.pyplot(fig)
+
+# Adicionar gráficos de valores mínimo e máximo
+st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
+
+# Remover colunas indesejadas
+columns_to_exclude = [f"V{i}" for i in range(1, 29)] + ["Vx", "Hour", "Time_Diff", "Class", "Transacao_Noturna"]
+numeric_columns = df.select_dtypes(include=['number']).columns
+numeric_columns = [col for col in numeric_columns if col not in columns_to_exclude]
+
+# Calcular valores mínimos e máximos apenas para colunas numéricas filtradas
+min_vals = df[numeric_columns].min()
+max_vals = df[numeric_columns].max()
+
+# Garantir que os índices sejam strings
+min_vals.index = min_vals.index.astype(str)
+max_vals.index = max_vals.index.astype(str)
+
+# Garantir que os valores sejam numéricos
+min_vals = pd.to_numeric(min_vals, errors='coerce').fillna(0)
+max_vals = pd.to_numeric(max_vals, errors='coerce').fillna(0)
+
+# Criar o gráfico
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.bar(min_vals.index, min_vals.values, color="blue", label="Min")
+ax.bar(max_vals.index, max_vals.values, color="red", label="Max", alpha=0.7)
+ax.set_title("Valores Mínimo e Máximo das Variáveis Especificadas")
+ax.set_ylabel("Valores")
+ax.legend()
+plt.xticks(rotation=90)
+st.pyplot(fig)
+
+# Adicionar legenda explicativa
+st.markdown("""
+**Legenda:**
+- **Min**: O valor mínimo registrado para a variável.
+- **Max**: O valor máximo registrado para a variável.
+Estes valores ajudam a entender a amplitude e a variação dos dados para cada variável.
+""")
