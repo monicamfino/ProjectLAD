@@ -441,40 +441,40 @@ if page == "🧭 Dados":
     plt.xticks(rotation=90)
     st.pyplot(fig)
 
-# Adicionar gráficos de valores mínimo e máximo
-st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
+    # Adicionar gráficos de valores mínimo e máximo
+    st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
 
-# Remover colunas indesejadas
-columns_to_exclude = [f"V{i}" for i in range(1, 29)] + ["Vx", "Hour", "Time_Diff", "Class", "Transacao_Noturna"]
-numeric_columns = df.select_dtypes(include=['number']).columns
-numeric_columns = [col for col in numeric_columns if col not in columns_to_exclude]
+    # Remover colunas indesejadas
+    columns_to_exclude = [f"V{i}" for i in range(1, 29)] + ["Vx", "Hour", "Time_Diff", "Class", "Transacao_Noturna"]
+    numeric_columns = df.select_dtypes(include=['number']).columns
+    numeric_columns = [col for col in numeric_columns if col not in columns_to_exclude]
 
-# Calcular valores mínimos e máximos apenas para colunas numéricas filtradas
-min_vals = df[numeric_columns].min()
-max_vals = df[numeric_columns].max()
+    # Calcular valores mínimos e máximos apenas para colunas numéricas filtradas
+    min_vals = df[numeric_columns].min()
+    max_vals = df[numeric_columns].max()
 
-# Garantir que os índices sejam strings
-min_vals.index = min_vals.index.astype(str)
-max_vals.index = max_vals.index.astype(str)
+    # Garantir que os índices sejam strings
+    min_vals.index = min_vals.index.astype(str)
+    max_vals.index = max_vals.index.astype(str)
 
-# Garantir que os valores sejam numéricos
-min_vals = pd.to_numeric(min_vals, errors='coerce').fillna(0)
-max_vals = pd.to_numeric(max_vals, errors='coerce').fillna(0)
+    # Garantir que os valores sejam numéricos
+    min_vals = pd.to_numeric(min_vals, errors='coerce').fillna(0)
+    max_vals = pd.to_numeric(max_vals, errors='coerce').fillna(0)
 
-# Criar o gráfico
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.bar(min_vals.index, min_vals.values, color="blue", label="Min")
-ax.bar(max_vals.index, max_vals.values, color="red", label="Max", alpha=0.7)
-ax.set_title("Valores Mínimo e Máximo das Variáveis Especificadas")
-ax.set_ylabel("Valores")
-ax.legend()
-plt.xticks(rotation=90)
-st.pyplot(fig)
+    # Criar o gráfico
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.bar(min_vals.index, min_vals.values, color="blue", label="Min")
+    ax.bar(max_vals.index, max_vals.values, color="red", label="Max", alpha=0.7)
+    ax.set_title("Valores Mínimo e Máximo das Variáveis Especificadas")
+    ax.set_ylabel("Valores")
+    ax.legend()
+    plt.xticks(rotation=90)
+    st.pyplot(fig)
 
-# Adicionar legenda explicativa
-st.markdown("""
-**Legenda:**
-- **Min**: O valor mínimo registrado para a variável.
-- **Max**: O valor máximo registrado para a variável.
-Estes valores ajudam a entender a amplitude e a variação dos dados para cada variável.
-""")
+    # Adicionar legenda explicativa
+    st.markdown("""
+    **Legenda:**
+    - **Min**: O valor mínimo registrado para a variável.
+    - **Max**: O valor máximo registrado para a variável.
+    Estes valores ajudam a entender a amplitude e a variação dos dados para cada variável.
+    """)
