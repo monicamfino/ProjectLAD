@@ -53,7 +53,8 @@ page = st.sidebar.radio("Navegação", [
     "📊 Análise de Fraudes",
     "📈 Estatísticas",
     "📂 Relatórios e Configurações",
-    "🧭 Dados"
+    "🧭 Dados",
+    "🤖 Machine Learning"
 ])
 
 # 📌 Página Inicial - Visão Geral
@@ -277,7 +278,7 @@ elif page == "📂 Relatórios e Configurações":
     st.markdown('<p class="big-font">📂 Relatórios e Configurações</p>', unsafe_allow_html=True)
 
     # Definindo sub-páginas
-    sub_page = st.sidebar.radio("Subtópicos", ["📑 Gerar Relatório", "⚙ Configurações Avançadas"])
+    sub_page = st.sidebar.radio("Subtópicos", ["📑 Gerar Relatório", "⚙ Configurações Avançadas", "🔄 Normalização e Padronização"])
 
     # 📑 Geração de Relatórios Personalizados
     if sub_page == "📑 Gerar Relatório":
@@ -298,10 +299,6 @@ elif page == "📂 Relatórios e Configurações":
             df_export = df.copy()
 
         df_export = df_export[colunas_selecionadas]
-
-        # 📊 Visualizar os dados antes do download
-        st.write("🔍 **Pré-visualização dos Dados:**")
-        st.dataframe(df_export.head(10))
 
         # 📊 Visualizar os dados antes do download
         st.write("🔍 **Pré-visualização dos Dados:**")
@@ -379,9 +376,238 @@ elif page == "📂 Relatórios e Configurações":
             st.write(f"- **Método de Detecção:** {metodo_analise}")
             st.write(f"- **Regiões Monitoradas:** {', '.join(selected_region)}")
 
+    # 🔄 Normalização e Padronização
+    elif sub_page == "🔄 Normalização e Padronização":
+        st.subheader("🔄 Padronização e Normalização de Dados")
+        
+        st.write("""
+        ## Padronização (Standardization)
+
+        A padronização (Z-score normalization) é uma técnica de pré-processamento de dados que transforma os valores 
+        para que tenham média 0 e desvio padrão 1.
+        """)
+
+        # Fórmula matemática com LaTeX
+        st.latex(r'Z = \frac{X - \mu}{\sigma}')
+        
+        st.write("""
+        onde:
+        - X = valor original
+        - μ = média da distribuição 
+        - σ = desvio padrão da distribuição
+        
+        **Características:**
+        - Resulta em dados com média 0
+        - Resulta em dados com desvio padrão 1
+        - Útil quando os dados seguem distribuição normal
+        - Preserva outliers (valores extremos)
+        
+        **Vantagens:**
+        - Facilita a comparação entre diferentes atributos
+        - Essencial para algoritmos sensíveis à escala (como SVM, K-means, PCA)
+        - Melhora a convergência em algoritmos de gradient descent
+        """)
+        
+        # Demonstração de padronização com os dados
+        with st.expander("🔍 Demonstração de Padronização"):
+            # Selecionar uma coluna para demonstração
+            selected_column = st.selectbox("Selecione uma coluna para padronização:", 
+                                          df.select_dtypes(include=['number']).columns)
+            
+            # Calcular média e desvio padrão
+            mean_value = df[selected_column].mean()
+            std_value = df[selected_column].std()
+            
+            # Criar uma amostra de dados padronizados
+            original_data = df[selected_column].head(10).values
+            standardized_data = (original_data - mean_value) / std_value
+            
+            # Mostrar uma comparação
+            comparison_df = pd.DataFrame({
+                "Original": original_data,
+                "Padronizado": standardized_data
+            })
+            
+            st.write("**Dados Originais vs. Padronizados:**")
+            st.write(comparison_df)
+            
+            # Mostrar estatísticas
+            st.write(f"**Média Original:** {mean_value:.4f}")
+            st.write(f"**Desvio Padrão Original:** {std_value:.4f}")
+            st.write(f"**Média dos Dados Padronizados:** {standardized_data.mean():.4f}")
+            st.write(f"**Desvio Padrão dos Dados Padronizados:** {standardized_data.std():.4f}")
+            
+            # Plotar comparação
+            fig, ax = plt.subplots(1, 2, figsize=(10, 4))
+            ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
+            ax[0].set_title("Dados Originais")
+            ax[1].hist(standardized_data, bins=10, color='green', alpha=0.7)
+            ax[1].set_title("Dados Padronizados")
+            st.pyplot(fig)
+        
+        st.write("""
+        ## Normalização (Min-Max Scaling)
+
+        A normalização transforma os dados para um intervalo específico, tipicamente [0,1] ou [-1,1].
+        """)
+        
+        # Fórmula matemática com LaTeX
+        st.latex(r"X' = \frac{X - X_{min}}{X_{max} - X_{min}}")
+        
+        st.write("""
+        onde:
+        - X = valor original
+        - Xmin = valor mínimo do atributo
+        - Xmax = valor máximo do atributo
+        
+        **Características:**
+        - Escala os dados para um intervalo fixo
+        - Preserva a distribuição original dos dados
+        - Útil quando a distribuição não é gaussiana
+        - Mantém relações entre valores originais
+        
+        **Vantagens:**
+        - Facilita comparação entre variáveis de unidades diferentes
+        - Útil para algoritmos que exigem valores limitados
+        - Boa para técnicas como redes neurais e algoritmos baseados em distância
+        """)
+        
+        # Demonstração de normalização com os dados
+        with st.expander("🔍 Demonstração de Normalização"):
+            # Selecionar uma coluna para demonstração
+            selected_column = st.selectbox("Selecione uma coluna para normalização:", 
+                                          df.select_dtypes(include=['number']).columns,
+                                          key="normalization_column")
+            
+            # Calcular min e max
+            min_value = df[selected_column].min()
+            max_value = df[selected_column].max()
+            
+            # Criar uma amostra de dados normalizados
+            original_data = df[selected_column].head(10).values
+            normalized_data = (original_data - min_value) / (max_value - min_value)
+            
+            # Mostrar uma comparação
+            comparison_df = pd.DataFrame({
+                "Original": original_data,
+                "Normalizado": normalized_data
+            })
+            
+            st.write("**Dados Originais vs. Normalizados:**")
+            st.write(comparison_df)
+            
+            # Mostrar estatísticas
+            st.write(f"**Valor Mínimo Original:** {min_value:.4f}")
+            st.write(f"**Valor Máximo Original:** {max_value:.4f}")
+            st.write(f"**Valor Mínimo Normalizado:** {normalized_data.min():.4f}")
+            st.write(f"**Valor Máximo Normalizado:** {normalized_data.max():.4f}")
+            
+            # Plotar comparação
+            fig, ax = plt.subplots(1, 2, figsize=(10, 4))
+            ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
+            ax[0].set_title("Dados Originais")
+            ax[1].hist(normalized_data, bins=10, color='red', alpha=0.7)
+            ax[1].set_title("Dados Normalizados")
+            st.pyplot(fig)
+        
+        st.write("""
+        ## Quando Usar Cada Técnica
+        
+        **Use Padronização quando:**
+        - Os dados seguem distribuição normal ou próxima dela
+        - O algoritmo pressupõe normalidade dos dados
+        - Há presença significativa de outliers que não devem ser ocultados
+        - Trabalhando com algoritmos como SVM, regressão linear, ou PCA
+        
+        **Use Normalização quando:**
+        - Precisa de um intervalo específico e limitado
+        - Trabalhando com redes neurais, especialmente com funções de ativação que esperam entradas em [0,1] ou [-1,1]
+        - A distribuição dos dados não é gaussiana
+        - A escala absoluta é importante para o algoritmo
+        
+        ## Importância no Big Data
+        
+        - Permite comparabilidade entre diferentes fontes de dados
+        - Reduz o impacto de diferentes magnitudes entre variáveis
+        - Essencial para algoritmos de aprendizado de máquina que são sensíveis à escala
+        - Melhora a qualidade dos resultados de clustering e classificação
+        - Facilita a integração de dados heterogêneos
+        """)
+        
+        # Aplicação prática
+        st.subheader("🧪 Aplicação Prática")
+        
+        st.write("""
+        Exemplo prático de como a padronização e normalização podem afetar a detecção de fraudes:
+        
+        Considere as variáveis 'Amount' e 'Time' que possuem escalas muito diferentes. Um algoritmo de detecção de fraude 
+        baseado em distância (como KNN) daria peso desproporcional à variável com maior magnitude. Ao normalizar ou 
+        padronizar, ambas as variáveis têm peso equivalente na decisão do algoritmo.
+        """)
+        
+        # Comparação visual final
+        st.subheader("📊 Comparação Visual")
+        
+        # Selecionar duas colunas para visualização
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_column1 = st.selectbox("Selecione a primeira coluna:", 
+                                           df.select_dtypes(include=['number']).columns,
+                                           key="vis_column1")
+        with col2:
+            selected_column2 = st.selectbox("Selecione a segunda coluna:", 
+                                           df.select_dtypes(include=['number']).columns,
+                                           key="vis_column2")
+        
+        # Amostrar dados para evitar sobrecarga
+        sample_size = min(1000, len(df))
+        sample_df = df.sample(sample_size, random_state=42)
+        
+        # Dados originais
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.scatter(sample_df[selected_column1], sample_df[selected_column2], 
+                   c=sample_df['Class'], cmap='coolwarm', alpha=0.6)
+        ax.set_xlabel(selected_column1)
+        ax.set_ylabel(selected_column2)
+        ax.set_title("Dados Originais")
+        st.pyplot(fig)
+        
+        # Dados padronizados
+        from sklearn.preprocessing import StandardScaler, MinMaxScaler
+        
+        # Preparar os dados
+        X = sample_df[[selected_column1, selected_column2]].values
+        y = sample_df['Class'].values
+        
+        # Padronizar
+        scaler = StandardScaler()
+        X_std = scaler.fit_transform(X)
+        
+        # Normalizar
+        min_max_scaler = MinMaxScaler()
+        X_norm = min_max_scaler.fit_transform(X)
+        
+        # Plotar dados padronizados
+        fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+        
+        # Padronizado
+        ax[0].scatter(X_std[:, 0], X_std[:, 1], c=y, cmap='coolwarm', alpha=0.6)
+        ax[0].set_xlabel(f"{selected_column1} (padronizado)")
+        ax[0].set_ylabel(f"{selected_column2} (padronizado)")
+        ax[0].set_title("Dados Padronizados")
+        
+        # Normalizado
+        ax[1].scatter(X_norm[:, 0], X_norm[:, 1], c=y, cmap='coolwarm', alpha=0.6)
+        ax[1].set_xlabel(f"{selected_column1} (normalizado)")
+        ax[1].set_ylabel(f"{selected_column2} (normalizado)")
+        ax[1].set_title("Dados Normalizados")
+        
+        plt.tight_layout()
+        st.pyplot(fig)
+        
 
 # Nova página: Dados
-if page == "🧭 Dados":
+elif page == "🧭 Dados":
     st.markdown('<p class="big-font">🧭 Dados</p>', unsafe_allow_html=True)
 
     st.subheader("📊 Dashboard de Variáveis")
@@ -477,4 +703,291 @@ if page == "🧭 Dados":
     - **Min**: O valor mínimo registrado para a variável.
     - **Max**: O valor máximo registrado para a variável.
     Estes valores ajudam a entender a amplitude e a variação dos dados para cada variável.
+    """)
+
+# Nova página: Machine Learning
+elif page == "🤖 Machine Learning":
+    st.markdown('<p class="big-font">🤖 Introdução ao Machine Learning</p>', unsafe_allow_html=True)
+    
+    # Conceitos básicos
+    st.subheader("🔍 Conceitos Básicos")
+    st.write("""
+    **Machine Learning (ML)** é um subcampo da Inteligência Artificial que permite aos computadores aprender 
+    sem programação explícita. Ao contrário da programação tradicional onde escrevemos regras específicas, 
+    no ML os algoritmos aprendem padrões diretamente a partir dos dados.
+    
+    A principal diferença é que em ML:
+    - Os dados ensinam o computador
+    - O sistema melhora com a experiência
+    - Identifica padrões estatisticamente significativos
+    """)
+    
+    # Comparação visual entre programação tradicional e ML
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### 💻 Programação Tradicional")
+        st.markdown("""
+        ```
+        Dados + Regras → Resultados
+        ```
+        """)
+        st.write("As regras são definidas pelo programador")
+        
+    with col2:
+        st.markdown("### 🤖 Machine Learning")
+        st.markdown("""
+        ```
+        Dados + Resultados → Regras
+        ```
+        """)
+        st.write("As regras são descobertas pelo algoritmo")
+    
+    # Tipos de aprendizado
+    st.subheader("📚 Tipos de Aprendizado")
+    
+    tab1, tab2, tab3 = st.tabs(["Supervisionado", "Não Supervisionado", "Por Reforço"])
+    
+    with tab1:
+        st.markdown("### Aprendizado Supervisionado")
+        st.write("""
+        No aprendizado supervisionado, o algoritmo é treinado em um conjunto de dados rotulado, 
+        onde para cada exemplo temos uma entrada e a saída desejada.
+        
+        **Exemplos de aplicações:**
+        - Classificação de e-mails em spam ou não-spam
+        - Previsão de preços de imóveis
+        - Diagnóstico médico
+        
+        **Algoritmos populares:**
+        - Regressão Linear/Logística
+        - Árvores de Decisão
+        - Random Forests
+        - Support Vector Machines (SVM)
+        - Redes Neurais
+        """)
+        
+        # Demonstração visual simples
+        st.markdown("#### Exemplo: Classificação de Fraudes")
+        
+        fig, ax = plt.subplots(figsize=(6, 4))
+        
+        # Amostra pequena para demonstração
+        sample = df.sample(100, random_state=42)
+        ax.scatter(sample["Amount"], sample["V1"], c=sample["Class"], cmap="coolwarm", s=50)
+        ax.set_xlabel("Valor da Transação")
+        ax.set_ylabel("Componente V1")
+        ax.set_title("Exemplo de Classificação: Transações Legítimas vs Fraudulentas")
+        
+        # Adicionar legenda manual
+        import matplotlib.patches as mpatches
+        red_patch = mpatches.Patch(color='red', label='Fraude')
+        blue_patch = mpatches.Patch(color='blue', label='Legítima')
+        ax.legend(handles=[red_patch, blue_patch])
+        
+        st.pyplot(fig)
+    
+    with tab2:
+        st.markdown("### Aprendizado Não Supervisionado")
+        st.write("""
+        No aprendizado não supervisionado, o algoritmo trabalha com dados não rotulados, 
+        buscando encontrar estruturas ou padrões intrínsecos nos dados.
+        
+        **Exemplos de aplicações:**
+        - Segmentação de clientes
+        - Agrupamento de notícias semelhantes
+        - Detecção de anomalias
+        - Redução de dimensionalidade
+        
+        **Algoritmos populares:**
+        - K-means
+        - DBSCAN
+        - Hierarchical Clustering
+        - PCA (Principal Component Analysis)
+        - t-SNE
+        """)
+        
+        # Demonstração visual de clustering
+        st.markdown("#### Exemplo: Clustering de Transações")
+        
+        from sklearn.cluster import KMeans
+        
+        # Amostra para demonstração
+        sample = df.sample(200, random_state=42)
+        X = sample[["Amount", "V1"]].values
+        
+        # Aplicar K-means
+        kmeans = KMeans(n_clusters=3, random_state=42)
+        sample_clusters = kmeans.fit_predict(X)
+        
+        # Visualizar
+        fig, ax = plt.subplots(figsize=(6, 4))
+        scatter = ax.scatter(X[:, 0], X[:, 1], c=sample_clusters, cmap="viridis", s=50)
+        ax.set_xlabel("Valor da Transação")
+        ax.set_ylabel("Componente V1")
+        ax.set_title("Clustering de Transações (K-means, k=3)")
+        
+        # Adicionar centróides
+        ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
+                  marker='X', s=200, color='red', label='Centróides')
+        ax.legend()
+        
+        st.pyplot(fig)
+    
+    with tab3:
+        st.markdown("### Aprendizado por Reforço")
+        st.write("""
+        No aprendizado por reforço, o algoritmo aprende a tomar decisões interagindo com um ambiente,
+        recebendo recompensas ou penalizações pelas ações tomadas.
+        
+        **Exemplos de aplicações:**
+        - Jogos (AlphaGo, Atari)
+        - Robótica
+        - Sistemas de recomendação
+        - Trading automatizado
+        
+        **Algoritmos populares:**
+        - Q-Learning
+        - Deep Q-Network (DQN)
+        - Policy Gradient
+        - Actor-Critic
+        """)
+        
+        st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
+                caption="Ciclo de Aprendizado por Reforço", width=400)
+    
+    # Processo de Machine Learning
+    st.subheader("⚙️ Processo de Machine Learning")
+    
+    process_steps = {
+        "1. Preparação de Dados": "Coleta, limpeza, normalização e divisão em conjuntos de treinamento/teste",
+        "2. Seleção de Modelo": "Escolha do algoritmo mais adequado para o problema",
+        "3. Treinamento": "Ajuste dos parâmetros do modelo usando dados de treinamento",
+        "4. Validação": "Avaliação do desempenho em dados não vistos anteriormente",
+        "5. Ajuste de Hiperparâmetros": "Otimização do modelo para melhorar o desempenho",
+        "6. Implantação": "Colocação do modelo em produção",
+        "7. Monitoramento": "Acompanhamento contínuo do desempenho"
+    }
+    
+    col1, col2 = st.columns(2)
+    
+    for i, (step, desc) in enumerate(process_steps.items()):
+        if i < 4:
+            col1.markdown(f"**{step}:** {desc}")
+        else:
+            col2.markdown(f"**{step}:** {desc}")
+    
+    # Aplicações em detecção de fraude
+    st.subheader("💳 Machine Learning na Detecção de Fraudes")
+    
+    st.write("""
+    A detecção de fraudes é uma das aplicações mais importantes de machine learning no setor financeiro.
+    Algoritmos ML podem identificar padrões suspeitos e anomalias que seriam difíceis de detectar manualmente.
+    
+    **Benefícios:**
+    
+    - **Processamento em tempo real**: análise de transações à medida que ocorrem
+    - **Adaptabilidade**: aprendizado contínuo com novos padrões de fraude
+    - **Redução de falsos positivos**: melhoria na precisão da detecção
+    - **Escalabilidade**: capacidade de processar milhões de transações
+    
+    **Desafios:**
+    
+    - **Dados desbalanceados**: geralmente há muito mais transações legítimas que fraudulentas
+    - **Adaptação a novas fraudes**: fraudadores evoluem constantemente suas técnicas
+    - **Latência**: necessidade de respostas em milissegundos
+    - **Dados sensíveis**: questões de privacidade e segurança
+    """)
+    
+    # Métricas de avaliação
+    st.subheader("📏 Métricas de Avaliação em Detecção de Fraudes")
+    
+    metrics = {
+        "Acurácia": "Porcentagem total de previsões corretas",
+        "Precisão": "Entre os casos classificados como fraude, quantos realmente são fraude",
+        "Recall (Sensibilidade)": "Entre as fraudes reais, quantas foram detectadas corretamente",
+        "F1-Score": "Média harmônica entre precisão e recall",
+        "AUC-ROC": "Capacidade de distinguir entre classes (0.5 = aleatório, 1.0 = perfeito)",
+        "Custo de classificação errada": "Perda financeira devido a falsos positivos e falsos negativos"
+    }
+    
+    for metric, desc in metrics.items():
+        st.markdown(f"**{metric}**: {desc}")
+    
+    # Demonstração prática
+    st.subheader("🧪 Demonstração Prática")
+    
+    with st.expander("Clique para ver uma demonstração simplificada de detecção de fraudes"):
+        st.write("""
+        Abaixo está um exemplo simplificado de como um modelo de classificação pode ser usado para detectar fraudes.
+        
+        Este exemplo usa apenas duas variáveis para facilitar a visualização, mas modelos reais usariam múltiplas variáveis.
+        """)
+        
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+        
+        # Preparar dados (amostra pequena para demonstração rápida)
+        sample = df.sample(1000, random_state=42)
+        X = sample[["Amount", "V1", "V3", "V4"]].values
+        y = sample["Class"].values
+        
+        # Dividir em treino e teste
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        
+        # Treinar modelo
+        with st.spinner('Treinando o modelo...'):
+            model = RandomForestClassifier(n_estimators=10, random_state=42)
+            model.fit(X_train, y_train)
+        
+        # Fazer previsões
+        y_pred = model.predict(X_test)
+        
+        # Avaliar modelo
+        st.write("**Acurácia do modelo:**", accuracy_score(y_test, y_pred))
+        
+        # Matriz de confusão
+        cm = confusion_matrix(y_test, y_pred)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+        ax.set_xlabel('Previsto')
+        ax.set_ylabel('Real')
+        ax.set_title('Matriz de Confusão')
+        st.pyplot(fig)
+        
+        # Relatório de classificação
+        st.write("**Relatório de classificação:**")
+        st.text(classification_report(y_test, y_pred))
+        
+        # Importância das features
+        importances = model.feature_importances_
+        feature_names = ["Amount", "V1", "V3", "V4"]
+        
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.bar(feature_names, importances)
+        ax.set_ylabel('Importância')
+        ax.set_title('Importância das Features')
+        st.pyplot(fig)
+        
+        st.write("""
+        **Observação:** Este é apenas um exemplo simplificado para fins educativos. 
+        Em cenários reais, seriam necessários:
+        - Pré-processamento mais extenso dos dados
+        - Utilização de mais features
+        - Ajuste de hiperparâmetros
+        - Técnicas para lidar com dados desbalanceados
+        - Validação cruzada
+        """)
+    
+    # Recursos adicionais
+    st.subheader("📚 Recursos Adicionais")
+    
+    st.write("""
+    Para aprender mais sobre Machine Learning e sua aplicação em detecção de fraudes:
+    
+    - **Cursos online**: Coursera, edX, Udemy
+    - **Competições**: Kaggle tem vários desafios de detecção de fraudes
+    - **Bibliotecas**: Scikit-learn, TensorFlow, PyTorch, XGBoost
+    - **Livros**: "Python Machine Learning" por Sebastian Raschka, "Hands-On Machine Learning" por Aurélien Géron
     """)
