@@ -1,5 +1,5 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-*.pdf
-creditcard.csv
+**/*.pdf
+/creditcard.csv
