@@ -4,6 +4,12 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import time
+from sklearn.linear_model import Ridge, Lasso, LinearRegression
+from sklearn.model_selection import train_test_split, cross_val_score, KFold
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
 
 # Configuração da página
 st.set_page_config(page_title="BugsBunny - Detecção de Fraude 💳", layout="wide")
@@ -570,6 +576,12 @@ elif page == "📂 Relatórios e Configurações":
         ax.set_xlabel(selected_column1)
         ax.set_ylabel(selected_column2)
         ax.set_title("Dados Originais")
+        # Adicionar legenda manual
+        import matplotlib.patches as mpatches
+        red_patch = mpatches.Patch(color='red', label='Fraude')
+        blue_patch = mpatches.Patch(color='blue', label='Legítima')
+        ax.legend(handles=[red_patch, blue_patch])
+        
         st.pyplot(fig)
         
         # Dados padronizados
@@ -707,154 +719,159 @@ elif page == "🧭 Dados":
 
 # Nova página: Machine Learning
 elif page == "🤖 Machine Learning":
-    st.markdown('<p class="big-font">🤖 Introdução ao Machine Learning</p>', unsafe_allow_html=True)
+    # Adicionar tabs para diferentes modelos de ML
+    model_tabs = st.tabs(["Introdução", "Classificação", "Ridge e Lasso Regression"])
     
-    # Conceitos básicos
-    st.subheader("🔍 Conceitos Básicos")
-    st.write("""
-    **Machine Learning (ML)** é um subcampo da Inteligência Artificial que permite aos computadores aprender 
-    sem programação explícita. Ao contrário da programação tradicional onde escrevemos regras específicas, 
-    no ML os algoritmos aprendem padrões diretamente a partir dos dados.
-    
-    A principal diferença é que em ML:
-    - Os dados ensinam o computador
-    - O sistema melhora com a experiência
-    - Identifica padrões estatisticamente significativos
-    """)
-    
-    # Comparação visual entre programação tradicional e ML
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### 💻 Programação Tradicional")
-        st.markdown("""
-        ```
-        Dados + Regras → Resultados
-        ```
-        """)
-        st.write("As regras são definidas pelo programador")
+    with model_tabs[0]:
+        # Mover o conteúdo existente sobre ML para esta tab
+        st.markdown("## Introdução ao Machine Learning")
         
-    with col2:
-        st.markdown("### 🤖 Machine Learning")
-        st.markdown("""
-        ```
-        Dados + Resultados → Regras
-        ```
-        """)
-        st.write("As regras são descobertas pelo algoritmo")
-    
-    # Tipos de aprendizado
-    st.subheader("📚 Tipos de Aprendizado")
-    
-    tab1, tab2, tab3 = st.tabs(["Supervisionado", "Não Supervisionado", "Por Reforço"])
-    
-    with tab1:
-        st.markdown("### Aprendizado Supervisionado")
+        # Conceitos básicos
+        st.subheader("🔍 Conceitos Básicos")
         st.write("""
-        No aprendizado supervisionado, o algoritmo é treinado em um conjunto de dados rotulado, 
-        onde para cada exemplo temos uma entrada e a saída desejada.
+        **Machine Learning (ML)** é um subcampo da Inteligência Artificial que permite aos computadores aprender 
+        sem programação explícita. Ao contrário da programação tradicional onde escrevemos regras específicas, 
+        no ML os algoritmos aprendem padrões diretamente a partir dos dados.
         
-        **Exemplos de aplicações:**
-        - Classificação de e-mails em spam ou não-spam
-        - Previsão de preços de imóveis
-        - Diagnóstico médico
-        
-        **Algoritmos populares:**
-        - Regressão Linear/Logística
-        - Árvores de Decisão
-        - Random Forests
-        - Support Vector Machines (SVM)
-        - Redes Neurais
+        A principal diferença é que em ML:
+        - Os dados ensinam o computador
+        - O sistema melhora com a experiência
+        - Identifica padrões estatisticamente significativos
         """)
         
-        # Demonstração visual simples
-        st.markdown("#### Exemplo: Classificação de Fraudes")
+        # Comparação visual entre programação tradicional e ML
+        col1, col2 = st.columns(2)
         
-        fig, ax = plt.subplots(figsize=(6, 4))
+        with col1:
+            st.markdown("### 💻 Programação Tradicional")
+            st.markdown("""
+            ```
+            Dados + Regras → Resultados
+            ```
+            """)
+            st.write("As regras são definidas pelo programador")
+            
+        with col2:
+            st.markdown("### 🤖 Machine Learning")
+            st.markdown("""
+            ```
+            Dados + Resultados → Regras
+            ```
+            """)
+            st.write("As regras são descobertas pelo algoritmo")
         
-        # Amostra pequena para demonstração
-        sample = df.sample(100, random_state=42)
-        ax.scatter(sample["Amount"], sample["V1"], c=sample["Class"], cmap="coolwarm", s=50)
-        ax.set_xlabel("Valor da Transação")
-        ax.set_ylabel("Componente V1")
-        ax.set_title("Exemplo de Classificação: Transações Legítimas vs Fraudulentas")
+        # Tipos de aprendizado
+        st.subheader("📚 Tipos de Aprendizado")
         
-        # Adicionar legenda manual
-        import matplotlib.patches as mpatches
-        red_patch = mpatches.Patch(color='red', label='Fraude')
-        blue_patch = mpatches.Patch(color='blue', label='Legítima')
-        ax.legend(handles=[red_patch, blue_patch])
+        tab1, tab2, tab3 = st.tabs(["Supervisionado", "Não Supervisionado", "Por Reforço"])
         
-        st.pyplot(fig)
-    
-    with tab2:
-        st.markdown("### Aprendizado Não Supervisionado")
-        st.write("""
-        No aprendizado não supervisionado, o algoritmo trabalha com dados não rotulados, 
-        buscando encontrar estruturas ou padrões intrínsecos nos dados.
+        with tab1:
+            st.markdown("### Aprendizado Supervisionado")
+            st.write("""
+            No aprendizado supervisionado, o algoritmo é treinado em um conjunto de dados rotulado, 
+            onde para cada exemplo temos uma entrada e a saída desejada.
+            
+            **Exemplos de aplicações:**
+            - Classificação de e-mails em spam ou não-spam
+            - Previsão de preços de imóveis
+            - Diagnóstico médico
+            
+            **Algoritmos populares:**
+            - Regressão Linear/Logística
+            - Árvores de Decisão
+            - Random Forests
+            - Support Vector Machines (SVM)
+            - Redes Neurais
+            """)
+            
+            # Demonstração visual simples
+            st.markdown("#### Exemplo: Classificação de Fraudes")
+            
+            fig, ax = plt.subplots(figsize=(6, 4))
+            
+            # Amostra pequena para demonstração
+            sample = df.sample(100, random_state=42)
+            ax.scatter(sample["Amount"], sample["V1"], c=sample["Class"], cmap="coolwarm", s=50)
+            ax.set_xlabel("Valor da Transação")
+            ax.set_ylabel("Componente V1")
+            ax.set_title("Exemplo de Classificação: Transações Legítimas vs Fraudulentas")
+            
+            # Adicionar legenda manual
+            import matplotlib.patches as mpatches
+            red_patch = mpatches.Patch(color='red', label='Fraude')
+            blue_patch = mpatches.Patch(color='blue', label='Legítima')
+            ax.legend(handles=[red_patch, blue_patch])
+            
+            st.pyplot(fig)
         
-        **Exemplos de aplicações:**
-        - Segmentação de clientes
-        - Agrupamento de notícias semelhantes
-        - Detecção de anomalias
-        - Redução de dimensionalidade
+        with tab2:
+            st.markdown("### Aprendizado Não Supervisionado")
+            st.write("""
+            No aprendizado não supervisionado, o algoritmo trabalha com dados não rotulados, 
+            buscando encontrar estruturas ou padrões intrínsecos nos dados.
+            
+            **Exemplos de aplicações:**
+            - Segmentação de clientes
+            - Agrupamento de notícias semelhantes
+            - Detecção de anomalias
+            - Redução de dimensionalidade
+            
+            **Algoritmos populares:**
+            - K-means
+            - DBSCAN
+            - Hierarchical Clustering
+            - PCA (Principal Component Analysis)
+            - t-SNE
+            """)
+            
+            # Demonstração visual de clustering
+            st.markdown("#### Exemplo: Clustering de Transações")
+            
+            from sklearn.cluster import KMeans
+            
+            # Amostra para demonstração
+            sample = df.sample(200, random_state=42)
+            X = sample[["Amount", "V1"]].values
+            
+            # Aplicar K-means
+            kmeans = KMeans(n_clusters=3, random_state=42)
+            sample_clusters = kmeans.fit_predict(X)
+            
+            # Visualizar
+            fig, ax = plt.subplots(figsize=(6, 4))
+            scatter = ax.scatter(X[:, 0], X[:, 1], c=sample_clusters, cmap="viridis", s=50)
+            ax.set_xlabel("Valor da Transação")
+            ax.set_ylabel("Componente V1")
+            ax.set_title("Clustering de Transações (K-means, k=3)")
+            
+            # Adicionar centróides
+            ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
+                      marker='X', s=200, color='red', label='Centróides')
+            ax.legend()
+            
+            st.pyplot(fig)
         
-        **Algoritmos populares:**
-        - K-means
-        - DBSCAN
-        - Hierarchical Clustering
-        - PCA (Principal Component Analysis)
-        - t-SNE
-        """)
-        
-        # Demonstração visual de clustering
-        st.markdown("#### Exemplo: Clustering de Transações")
-        
-        from sklearn.cluster import KMeans
-        
-        # Amostra para demonstração
-        sample = df.sample(200, random_state=42)
-        X = sample[["Amount", "V1"]].values
-        
-        # Aplicar K-means
-        kmeans = KMeans(n_clusters=3, random_state=42)
-        sample_clusters = kmeans.fit_predict(X)
-        
-        # Visualizar
-        fig, ax = plt.subplots(figsize=(6, 4))
-        scatter = ax.scatter(X[:, 0], X[:, 1], c=sample_clusters, cmap="viridis", s=50)
-        ax.set_xlabel("Valor da Transação")
-        ax.set_ylabel("Componente V1")
-        ax.set_title("Clustering de Transações (K-means, k=3)")
-        
-        # Adicionar centróides
-        ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
-                  marker='X', s=200, color='red', label='Centróides')
-        ax.legend()
-        
-        st.pyplot(fig)
-    
-    with tab3:
-        st.markdown("### Aprendizado por Reforço")
-        st.write("""
-        No aprendizado por reforço, o algoritmo aprende a tomar decisões interagindo com um ambiente,
-        recebendo recompensas ou penalizações pelas ações tomadas.
-        
-        **Exemplos de aplicações:**
-        - Jogos (AlphaGo, Atari)
-        - Robótica
-        - Sistemas de recomendação
-        - Trading automatizado
-        
-        **Algoritmos populares:**
-        - Q-Learning
-        - Deep Q-Network (DQN)
-        - Policy Gradient
-        - Actor-Critic
-        """)
-        
-        st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
-                caption="Ciclo de Aprendizado por Reforço", width=400)
+        with tab3:
+            st.markdown("### Aprendizado por Reforço")
+            st.write("""
+            No aprendizado por reforço, o algoritmo aprende a tomar decisões interagindo com um ambiente,
+            recebendo recompensas ou penalizações pelas ações tomadas.
+            
+            **Exemplos de aplicações:**
+            - Jogos (AlphaGo, Atari)
+            - Robótica
+            - Sistemas de recomendação
+            - Trading automatizado
+            
+            **Algoritmos populares:**
+            - Q-Learning
+            - Deep Q-Network (DQN)
+            - Policy Gradient
+            - Actor-Critic
+            """)
+            
+            st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
+                    caption="Ciclo de Aprendizado por Reforço", width=400)
     
     # Processo de Machine Learning
     st.subheader("⚙️ Processo de Machine Learning")
@@ -934,7 +951,7 @@ elif page == "🤖 Machine Learning":
         y = sample["Class"].values
         
         # Dividir em treino e teste
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
         
         # Treinar modelo
         with st.spinner('Treinando o modelo...'):
@@ -948,9 +965,9 @@ elif page == "🤖 Machine Learning":
         st.write("**Acurácia do modelo:**", accuracy_score(y_test, y_pred))
         
         # Matriz de confusão
-        cm = confusion_matrix(y_test, y_pred)
+        cm = confusion_matrix(y_test, y_pred, labels=[0, 1])  # Especificamos explicitamente as classes 0 e 1
         fig, ax = plt.subplots(figsize=(6, 4))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
         ax.set_xlabel('Previsto')
         ax.set_ylabel('Real')
         ax.set_title('Matriz de Confusão')
@@ -958,7 +975,7 @@ elif page == "🤖 Machine Learning":
         
         # Relatório de classificação
         st.write("**Relatório de classificação:**")
-        st.text(classification_report(y_test, y_pred))
+        st.text(classification_report(y_test, y_pred, zero_division=0))
         
         # Importância das features
         importances = model.feature_importances_
@@ -980,14 +997,379 @@ elif page == "🤖 Machine Learning":
         - Validação cruzada
         """)
     
-    # Recursos adicionais
-    st.subheader("📚 Recursos Adicionais")
+    with model_tabs[1]:
+        # Mover a demonstração de classificação para esta tab
+        st.markdown("## Classificação para Detecção de Fraudes")
+        
+        # Carregar dados
+        df = pd.read_csv("creditcard.csv")
+        df = df.dropna()
+        
+        # Criar variável alvo (Class) desbalanceada
+        df["Class"] = df["Class"].astype("category")
+        
+        # Amostra dos dados
+        st.subheader("Amostra dos Dados")
+        st.write(df.sample(10))
+        
+        # Contagem das classes
+        st.subheader("Distribuição das Classes")
+        class_counts = df["Class"].value_counts()
+        st.bar_chart(class_counts)
+        
+        # Seleção de variáveis
+        st.subheader("Seleção de Variáveis")
+        
+        all_columns = df.columns.tolist()
+        target = "Class"
+        features = st.multiselect(
+            "Selecione as variáveis independentes (features):",
+            options=all_columns,
+            default=all_columns[:-1]  # Selecionar todas menos a última (que é a variável alvo)
+        )
+        
+        # Garantir que a variável alvo não esteja entre as features selecionadas
+        if target in features:
+            features.remove(target)
+        
+        st.write("Features selecionadas:", features)
+        
+        # Dividir dados
+        X = df[features]
+        y = df[target]
+        
+        # Dividir em treino e teste
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+        
+        # Treinamento do modelo
+        st.subheader("Treinamento do Modelo")
+        
+        # Selecionar modelo
+        model_type = st.selectbox(
+            "Escolha o tipo de modelo:",
+            ["Random Forest", "Regressão Logística", "Árvore de Decisão"]
+        )
+        
+        if model_type == "Random Forest":
+            from sklearn.ensemble import RandomForestClassifier
+            model = RandomForestClassifier(class_weight='balanced', random_state=42)
+        elif model_type == "Regressão Logística":
+            from sklearn.linear_model import LogisticRegression
+            model = LogisticRegression(class_weight='balanced', solver='liblinear', max_iter=2000, random_state=42)
+        else:
+            from sklearn.tree import DecisionTreeClassifier
+            model = DecisionTreeClassifier(random_state=42)
+        
+        # Treinar modelo
+        with st.spinner(f'Treinando o modelo ({model_type})...'):
+            # Aplicar SMOTE para balancear as classes
+            smote = SMOTE(random_state=42)
+            X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+            
+            model.fit(X_train_resampled, y_train_resampled)
+        
+        # Avaliação do modelo
+        st.subheader("Avaliação do Modelo")
+        
+        # Fazer previsões
+        y_pred = model.predict(X_test)
+        
+        # Acurácia
+        accuracy = accuracy_score(y_test, y_pred)
+        st.write(f"Acurácia: {accuracy:.2f}")
+        
+        # Matriz de confusão
+        st.subheader("Matriz de Confusão")
+        cm = confusion_matrix(y_test, y_pred, labels=[0, 1])  # Especificamos explicitamente as classes 0 e 1
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
+        ax.set_xlabel('Previsto')
+        ax.set_ylabel('Real')
+        ax.set_title('Matriz de Confusão')
+        st.pyplot(fig)
+        
+        # Relatório de classificação
+        st.subheader("Relatório de Classificação")
+        st.text(classification_report(y_test, y_pred, zero_division=0))
+        
+        # Importância das features (apenas para Random Forest)
+        if model_type == "Random Forest":
+            st.subheader("Importância das Features")
+            
+            importances = model.feature_importances_
+            feature_names = features
+            
+            # Criar dataframe de importâncias
+            importance_df = pd.DataFrame({
+                'Feature': feature_names,
+                'Importância': importances
+            }).sort_values(by="Importância", ascending=False)
+            
+            st.write(importance_df)
+            
+            # Gráfico de barras
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.barplot(data=importance_df, x="Importância", y="Feature", ax=ax, hue="Importância", palette="viridis", legend=False)
+            ax.set_title("Importância das Features - Random Forest")
+            ax.set_xlabel("Features")
+            ax.set_ylabel("Importância")
+            st.pyplot(fig)
     
-    st.write("""
-    Para aprender mais sobre Machine Learning e sua aplicação em detecção de fraudes:
+    with model_tabs[2]:
+        st.markdown("## Ridge e Lasso Regression para Detecção de Fraudes")
+        
+        st.write("""
+        ### Regressão Regularizada para Classificação de Fraudes
+        
+        Embora Ridge e Lasso sejam técnicas de regressão, elas podem ser aplicadas para problemas de classificação 
+        binária como detecção de fraudes. Neste exemplo, usaremos essas técnicas para prever a variável 'Class'
+        (0: transação legítima, 1: transação fraudulenta).
+        
+        - **Ridge Regression**: Utiliza regularização L2, que penaliza a soma dos quadrados dos coeficientes.
+        - **Lasso Regression**: Utiliza regularização L1, que penaliza a soma dos valores absolutos dos coeficientes e pode reduzir alguns coeficientes a zero.
+        """)
+        
+        # Seleção de variáveis
+        st.subheader("Configuração do Modelo")
+
+        # A variável alvo agora é fixa como "Class"
+        target_column = "Class"
+        st.write(f"**Variável alvo:** {target_column} (0: Legítima, 1: Fraudulenta)")
+        
+        n_features = st.slider("Número de features a utilizar", 2, 10, 5)
+        
+        # Seleção automática de features mais correlacionadas com a variável Class
+        numeric_df = df.select_dtypes(include=['number'])
+        if target_column in numeric_df.columns:
+            correlations = numeric_df.drop(columns=[target_column]).corrwith(df[target_column]).abs().sort_values(ascending=False)
+        else:
+            correlations = numeric_df.corrwith(df[target_column]).abs().sort_values(ascending=False)
+        best_features = correlations[:n_features].index.tolist()
+        
+        st.write(f"Features selecionadas (baseadas em correlação com {target_column}):")
+        st.write(best_features)
+        
+        # Dividir dados
+        X = df[best_features].values
+        y = df[target_column].values
+        
+        # Normalizar dados
+        from sklearn.preprocessing import StandardScaler
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        # Dividir em treino e teste
+        test_size = st.slider("Proporção para teste (%)", 10, 40, 20) / 100
+        X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=test_size, random_state=42, stratify=y)
+        
+        # Configuração dos modelos
+        st.subheader("Parâmetros de Regularização")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            alpha_ridge = st.slider(
+                "Alpha para Ridge (força da regularização L2):", 
+                0.01, 10.0, 1.0, 0.01
+            )
     
-    - **Cursos online**: Coursera, edX, Udemy
-    - **Competições**: Kaggle tem vários desafios de detecção de fraudes
-    - **Bibliotecas**: Scikit-learn, TensorFlow, PyTorch, XGBoost
-    - **Livros**: "Python Machine Learning" por Sebastian Raschka, "Hands-On Machine Learning" por Aurélien Géron
-    """)
+        with col2:
+            alpha_lasso = st.slider(
+                "Alpha para Lasso (força da regularização L1):", 
+                0.001, 1.0, 0.01, 0.001
+            )
+    
+        # Treinamento dos modelos
+        with st.spinner("Treinando modelos..."):
+            # Linear Regression (sem regularização)
+            lr = LinearRegression()
+            lr.fit(X_train, y_train)
+            
+            # Ridge Regression
+            ridge = Ridge(alpha=alpha_ridge)
+            ridge.fit(X_train, y_train)
+            
+            # Lasso Regression
+            lasso = Lasso(alpha=alpha_lasso, max_iter=10000)
+            lasso.fit(X_train, y_train)
+        
+        # Avaliação dos modelos
+        models = {
+            "Regressão Linear": lr,
+            f"Ridge (α={alpha_ridge})": ridge,
+            f"Lasso (α={alpha_lasso})": lasso
+        }
+        
+        # Configurar um limiar para converter previsões contínuas em binárias
+        threshold = 0.5
+        
+        results = {}
+        predictions = {}
+        
+        for name, model in models.items():
+            # Previsões contínuas
+            y_pred_proba = model.predict(X_test)
+            # Converter para binárias usando threshold
+            y_pred_binary = (y_pred_proba > threshold).astype(int)
+            predictions[name] = y_pred_binary
+            
+            # Métricas de classificação
+            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+            
+            accuracy = accuracy_score(y_test, y_pred_binary)
+            precision = precision_score(y_test, y_pred_binary, zero_division=0)
+            recall = recall_score(y_test, y_pred_binary, zero_division=0)
+            f1 = f1_score(y_test, y_pred_binary, zero_division=0)
+            mse = mean_squared_error(y_test, y_pred_proba)
+            
+            results[name] = {
+                "Acurácia": accuracy,
+                "Precisão": precision,
+                "Recall": recall, 
+                "F1-Score": f1,
+                "MSE": mse
+            }
+        
+        # Mostrar resultados
+        st.subheader("Resultados dos Modelos")
+        
+        # Criar dataframe de resultados
+        results_df = pd.DataFrame({
+            model: metrics
+            for model, metrics in results.items()
+        }).T
+        
+        st.write(results_df)
+        
+        # Gráfico de barras para F1-Score (melhor métrica para dados desbalanceados)
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.bar(results_df.index, results_df["F1-Score"], color=["blue", "green", "orange"])
+        ax.set_ylabel('F1-Score')
+        ax.set_title('Comparação de Modelos - F1-Score (maior é melhor)')
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        st.pyplot(fig)
+        
+        # Visualizar coeficientes
+        st.subheader("Coeficientes dos Modelos")
+        
+        coef_df = pd.DataFrame({
+            'Feature': best_features,
+            'Linear Regression': lr.coef_,
+            f'Ridge (α={alpha_ridge})': ridge.coef_,
+            f'Lasso (α={alpha_lasso})': lasso.coef_
+        })
+        
+        st.write(coef_df.set_index('Feature'))
+        
+        # Gráfico de coeficientes
+        fig, ax = plt.subplots(figsize=(12, 8))
+        bar_width = 0.25
+        index = np.arange(len(best_features))
+        
+        # Plotar barras para cada modelo
+        ax.bar(index - bar_width, lr.coef_, bar_width, label='Linear Regression', color='blue')
+        ax.bar(index, ridge.coef_, bar_width, label=f'Ridge (α={alpha_ridge})', color='green')
+        ax.bar(index + bar_width, lasso.coef_, bar_width, label=f'Lasso (α={alpha_lasso})', color='orange')
+        
+        # Adicionar linha zero para referência
+        ax.axhline(y=0, color='gray', linestyle='-', alpha=0.3)
+        
+        # Configurar labels e legendas
+        ax.set_xlabel('Features')
+        ax.set_ylabel('Coeficientes')
+        ax.set_title('Importância das Features para Detecção de Fraudes')
+        ax.set_xticks(index)
+        ax.set_xticklabels(best_features, rotation=45, ha='right')
+        ax.legend()
+        
+        plt.tight_layout()
+        st.pyplot(fig)
+        
+        # Matriz de confusão para o melhor modelo
+        st.subheader("Matriz de Confusão")
+        
+        # Encontrar o melhor modelo com base no F1-Score
+        best_model_name = results_df["F1-Score"].idxmax()
+        best_model_pred = predictions[best_model_name]
+        
+        cm = confusion_matrix(y_test, best_model_pred, labels=[0, 1])
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
+        ax.set_xlabel('Previsto')
+        ax.set_ylabel('Real')
+        ax.set_title(f'Matriz de Confusão - {best_model_name}')
+        st.pyplot(fig)
+        
+        # Explicação sobre Ridge e Lasso para classificação
+        st.subheader("Interpretação")
+        
+        st.write("""
+        ### Aplicação de Ridge e Lasso para Detecção de Fraudes:
+        
+        1. **Interpretação dos Coeficientes**:
+           - Coeficientes positivos: Indicam que valores maiores dessa feature aumentam a probabilidade de fraude
+           - Coeficientes negativos: Indicam que valores maiores dessa feature diminuem a probabilidade de fraude
+           - Coeficientes próximos a zero (especialmente em Lasso): Indicam features menos relevantes para a detecção
+    
+        2. **Comparação dos Modelos**:
+           - **Regressão Linear**: Sem regularização, pode ser mais suscetível a overfitting, especialmente com muitas variáveis
+           - **Ridge**: Reduz todos os coeficientes de forma proporcional, mantendo todas as features
+           - **Lasso**: Tende a realizar seleção de features, eliminando algumas completamente (coeficientes = 0)
+    
+        3. **Por que usar regularização para fraudes?**
+           - Dados de fraude geralmente têm muitas variáveis potencialmente correlacionadas
+           - A regularização ajuda a evitar overfitting em dados de treinamento
+           - Lasso pode identificar automaticamente as variáveis mais importantes para detecção
+        """)
+    
+        # Adicionar thresholding interativo
+        st.subheader("Ajuste de Limiar (Threshold)")
+        
+        st.write("""
+        Em problemas de classificação desbalanceados como detecção de fraudes, 
+        ajustar o limiar de decisão é crucial para equilibrar falsos positivos e falsos negativos.
+        """)
+        
+        # Escolher um modelo para ajustar o threshold
+        model_for_threshold = st.selectbox(
+            "Escolha um modelo para ajustar o limiar:",
+            list(models.keys())
+        )
+        
+        # Obter as previsões contínuas
+        selected_model = models[model_for_threshold]
+        y_scores = selected_model.predict(X_test)
+        
+        # Slider para threshold
+        custom_threshold = st.slider(
+            "Limiar de decisão",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.5,
+            step=0.01
+        )
+        
+        # Aplicar threshold
+        y_pred_custom = (y_scores > custom_threshold).astype(int)
+        
+        # Métricas com threshold personalizado
+        custom_accuracy = accuracy_score(y_test, y_pred_custom)
+        custom_precision = precision_score(y_test, y_pred_custom, zero_division=0)
+        custom_recall = recall_score(y_test, y_pred_custom, zero_division=0)
+        custom_f1 = f1_score(y_test, y_pred_custom, zero_division=0)
+        
+        # Mostrar métricas
+        col1, col2 = st.columns(2)
+        col1.metric("Acurácia", f"{custom_accuracy:.4f}")
+        col1.metric("Precisão", f"{custom_precision:.4f}")
+        col2.metric("Recall", f"{custom_recall:.4f}")
+        col2.metric("F1-Score", f"{custom_f1:.4f}")
+        
+        # Matriz de confusão com threshold personalizado
+        cm_custom = confusion_matrix(y_test, y_pred_custom, labels=[0, 1])
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(cm_custom, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
+        ax.set_xlabel('Previsto')
+        ax.set_ylabel('Real')
+        ax.set_title(f'Matriz de Confusão com Limiar = {custom_threshold}')
+        st.pyplot(fig)
