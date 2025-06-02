@@ -1373,3 +1373,5 @@ elif page == "🤖 Machine Learning":
         ax.set_ylabel('Real')
         ax.set_title(f'Matriz de Confusão com Limiar = {custom_threshold}')
         st.pyplot(fig)
+
+#Boosting Methods AdaBoost XGBoost
