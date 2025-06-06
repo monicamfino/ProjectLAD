@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 from sklearn.linear_model import Ridge, Lasso, LinearRegression
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, precision_score, recall_score, f1_score, accuracy_score, confusion_matrix, classification_report
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
@@ -1190,12 +1190,10 @@ elif page == "🤖 Machine Learning":
                     # Display confusion matrix
                     cm_ada = confusion_matrix(y_test, y_pred_ada)
                     fig, ax = plt.subplots(figsize=(5, 4))
-                    sns.heatmap(cm_ada, annot=True, fmt='d', cmap='Blues', 
-                               xticklabels=['Legitimate', 'Fraud'], 
-                               yticklabels=['Legitimate', 'Fraud'])
-                    ax.set_xlabel('Predicted')
-                    ax.set_ylabel('Actual')
-                    ax.set_title('AdaBoost Confusion Matrix')
+                    sns.heatmap(cm_ada, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
+                    ax.set_xlabel('Previsto')
+                    ax.set_ylabel('Real')
+                    ax.set_title('Matriz de Confusão')
                     st.pyplot(fig)
         
         with col2:
@@ -1245,12 +1243,10 @@ elif page == "🤖 Machine Learning":
                     # Display confusion matrix
                     cm_xgb = confusion_matrix(y_test, y_pred_xgb)
                     fig, ax = plt.subplots(figsize=(5, 4))
-                    sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Blues', 
-                               xticklabels=['Legitimate', 'Fraud'], 
-                               yticklabels=['Legitimate', 'Fraud'])
-                    ax.set_xlabel('Predicted')
-                    ax.set_ylabel('Actual')
-                    ax.set_title('XGBoost Confusion Matrix')
+                    sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
+                    ax.set_xlabel('Previsto')
+                    ax.set_ylabel('Real')
+                    ax.set_title('Matriz de Confusão')
                     st.pyplot(fig)
                     
                     # Feature importance for XGBoost
@@ -1455,11 +1451,11 @@ elif page == "🤖 Machine Learning":
                 cm_nb = confusion_matrix(y_test, y_pred_nb)
                 fig, ax = plt.subplots(figsize=(6, 4))
                 sns.heatmap(cm_nb, annot=True, fmt='d', cmap='Blues', 
-                           xticklabels=['Legitimate', 'Fraud'], 
-                           yticklabels=['Legitimate', 'Fraud'])
-                ax.set_xlabel('Predicted')
-                ax.set_ylabel('Actual')
-                ax.set_title('Naive Bayes Confusion Matrix')
+                           xticklabels=['Legítima', 'Fraude'], 
+                           yticklabels=['Legítima', 'Fraude'])
+                ax.set_xlabel('Previsto')
+                ax.set_ylabel('Real')
+                ax.set_title('Matriz de Confusão')
                 st.pyplot(fig)
                 
                 # Classification report
@@ -1507,10 +1503,10 @@ elif page == "🤖 Machine Learning":
                 cm_custom_nb = confusion_matrix(y_test, y_pred_custom_nb)
                 fig, ax = plt.subplots(figsize=(6, 4))
                 sns.heatmap(cm_custom_nb, annot=True, fmt='d', cmap='Blues', 
-                           xticklabels=['Legitimate', 'Fraud'], 
-                           yticklabels=['Legitimate', 'Fraud'])
-                ax.set_xlabel('Predicted')
-                ax.set_ylabel('Actual')
+                           xticklabels=['Legítima', 'Fraude'], 
+                           yticklabels=['Legítima', 'Fraude'])
+                ax.set_xlabel('Previsto')
+                ax.set_ylabel('Real')
                 ax.set_title(f'Naive Bayes Confusion Matrix (Threshold={nb_threshold:.2f})')
                 st.pyplot(fig)
         
