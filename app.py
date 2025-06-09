@@ -10,6 +10,11 @@ from sklearn.metrics import mean_squared_error, precision_score, recall_score, f
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
+from sklearn import tree
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier
+
 
 # Configuração da página
 st.set_page_config(page_title="BugsBunny - Detecção de Fraude 💳", layout="wide")
@@ -1063,16 +1068,72 @@ elif page == "🤖 Machine Learning":
             "Escolha o tipo de modelo:",
             ["Random Forest", "Regressão Logística", "Árvore de Decisão"]
         )
-        
+
         if model_type == "Random Forest":
-            from sklearn.ensemble import RandomForestClassifier
-            model = RandomForestClassifier(class_weight='balanced', random_state=42)
+            from sklearn import tree
+
+            st.subheader("🌳 Visualização de uma Árvore Individual do Random Forest")
+            tree_idx = st.slider("Escolha o índice da árvore para visualizar", 0, len(model.estimators_) - 1, 0)
+            fig, ax = plt.subplots(figsize=(16, 6))
+            tree.plot_tree(
+                model.estimators_[tree_idx],
+                feature_names=features,
+                class_names=["Legítima", "Fraude"],
+                filled=True,
+                rounded=True,
+                max_depth=3,  # Limite para facilitar a visualização
+                fontsize=10,
+                ax=ax
+            )
+            st.pyplot(fig)
+            st.write(f"**Árvore exibida:** Estimador {tree_idx} do Random Forest (apenas os 3 primeiros níveis).")
         elif model_type == "Regressão Logística":
             from sklearn.linear_model import LogisticRegression
             model = LogisticRegression(class_weight='balanced', solver='liblinear', max_iter=2000, random_state=42)
         else:
-            from sklearn.tree import DecisionTreeClassifier
-            model = DecisionTreeClassifier(random_state=42)
+            if model_type == "Árvore de Decisão":
+                from sklearn import tree
+
+                # Visualização da árvore
+                st.subheader("🌳 Visualização da Árvore de Decisão")
+                fig, ax = plt.subplots(figsize=(16, 6))
+                tree.plot_tree(
+                    model,
+                    feature_names=features,
+                    class_names=["Legítima", "Fraude"],
+                    filled=True,
+                    rounded=True,
+                    max_depth=3,  # Limite para visualização
+                    fontsize=10,
+                    ax=ax
+                )
+                st.pyplot(fig)
+                st.write(
+                    "**A árvore acima mostra as principais regras de decisão aprendidas pelo modelo (apenas os 3 primeiros níveis para facilitar a visualização).**")
+
+                # Análise do índice Gini
+                st.subheader("📊 Análise do Índice Gini dos Nós")
+                gini_values = model.tree_.impurity
+                node_samples = model.tree_.n_node_samples
+                gini_df = pd.DataFrame({
+                    "Nó": range(len(gini_values)),
+                    "Índice Gini": gini_values,
+                    "Amostras no Nó": node_samples
+                })
+                st.write(gini_df.head(10))  # Mostra os 10 primeiros nós
+
+                fig, ax = plt.subplots(figsize=(8, 4))
+                ax.plot(gini_df["Nó"], gini_df["Índice Gini"], marker="o")
+                ax.set_xlabel("Nó")
+                ax.set_ylabel("Índice Gini")
+                ax.set_title("Índice Gini ao longo dos nós da árvore")
+                st.pyplot(fig)
+
+                st.write("""
+                **O índice Gini mede a impureza dos nós:**
+                - Valor 0: nó puro (todas as amostras da mesma classe)
+                - Valor próximo de 0.5: mistura equilibrada das classes
+                """)
         
         # Treinar modelo
         with st.spinner(f'Treinando o modelo ({model_type})...'):
@@ -1081,6 +1142,35 @@ elif page == "🤖 Machine Learning":
             X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
             
             model.fit(X_train_resampled, y_train_resampled)
+
+            # Defina o número de componentes do PCA
+            n_components = st.slider("Nº de componentes do PCA", 2, min(len(features), 20), 5)
+
+            # Treinamento SEM PCA
+            start = time.time()
+            model_no_pca = RandomForestClassifier(n_estimators=50, random_state=42)
+            model_no_pca.fit(X_train, y_train)
+            fit_time_no_pca = time.time() - start
+            acc_no_pca = model_no_pca.score(X_test, y_test)
+
+            # Treinamento COM PCA
+            pca = PCA(n_components=n_components, random_state=42)
+            X_train_pca = pca.fit_transform(X_train)
+            X_test_pca = pca.transform(X_test)
+
+            start = time.time()
+            model_pca = RandomForestClassifier(n_estimators=50, random_state=42)
+            model_pca.fit(X_train_pca, y_train)
+            fit_time_pca = time.time() - start
+            acc_pca = model_pca.score(X_test_pca, y_test)
+
+            # Exibir resultados
+            st.subheader("Comparação: Com vs. Sem PCA")
+            results = pd.DataFrame({
+                "Acurácia": [acc_no_pca, acc_pca],
+                "Tempo de ajuste (s)": [fit_time_no_pca, fit_time_pca]
+            }, index=["Sem PCA", "Com PCA"])
+            st.write(results)
         
         # Avaliação do modelo
         st.subheader("Avaliação do Modelo")
@@ -1509,7 +1599,131 @@ elif page == "🤖 Machine Learning":
                 ax.set_ylabel('Real')
                 ax.set_title(f'Naive Bayes Confusion Matrix (Threshold={nb_threshold:.2f})')
                 st.pyplot(fig)
-        
+
+        # K-Nearest Neighbors (K-NN)
+        st.subheader("🔎 K-Nearest Neighbors (K-NN)")
+
+        run_knn = st.checkbox("Treinar modelo K-NN", value=False)
+        if run_knn:
+            from sklearn.neighbors import KNeighborsClassifier
+
+            # Seleção do número de vizinhos
+            k_range = st.slider("Escolha o intervalo de k (nº de vizinhos)", 1, 20, (3, 10))
+            k_values = list(range(k_range[0], k_range[1] + 1))
+            f1_scores = []
+
+            with st.spinner("Treinando K-NN para diferentes valores de k..."):
+                for k in k_values:
+                    knn = KNeighborsClassifier(n_neighbors=k)
+                    knn.fit(X_train_resampled, y_train_resampled)
+                    y_pred = knn.predict(X_test)
+                    f1 = f1_score(y_test, y_pred, zero_division=0)
+                    f1_scores.append(f1)
+
+            # Gráfico F1-Score x k
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot(k_values, f1_scores, marker='o')
+            ax.set_xlabel("Número de Vizinhos (k)")
+            ax.set_ylabel("F1-Score")
+            ax.set_title("F1-Score para diferentes valores de k (K-NN)")
+            st.pyplot(fig)
+
+            # Melhor k
+            best_k = k_values[np.argmax(f1_scores)]
+            st.write(f"Melhor valor de k: **{best_k}** (F1-Score = {max(f1_scores):.4f})")
+
+            # Avaliação detalhada para o melhor k
+            knn_best = KNeighborsClassifier(n_neighbors=best_k)
+            knn_best.fit(X_train_resampled, y_train_resampled)
+            y_pred_best = knn_best.predict(X_test)
+            st.write("**Relatório de classificação (melhor k):**")
+            st.text(classification_report(y_test, y_pred_best, zero_division=0))
+            cm = confusion_matrix(y_test, y_pred_best, labels=[0, 1])
+            fig, ax = plt.subplots(figsize=(6, 4))
+            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'],
+                        yticklabels=['Legítima', 'Fraude'])
+            ax.set_xlabel('Previsto')
+            ax.set_ylabel('Real')
+            ax.set_title(f'Matriz de Confusão - K-NN (k={best_k})')
+            st.pyplot(fig)
+
+            st.write("""
+            **Explicação:**  
+            O K-NN classifica uma transação com base nos k vizinhos mais próximos no espaço das features.  
+            O valor ótimo de k é escolhido com base no melhor F1-Score, equilibrando precisão e recall para dados desbalanceados.
+            """)
+        st.subheader("🧠 Rede Neural (MLPClassifier)")
+
+        run_mlp = st.checkbox("Treinar Rede Neural (MLPClassifier)", value=False)
+        if run_mlp:
+            from sklearn.neural_network import MLPClassifier
+
+            # Parâmetros da rede
+            hidden_layer_sizes = st.slider("Tamanho das camadas ocultas (ex: 1 camada com 20 neurônios)", 5, 100, 20)
+            n_layers = st.slider("Número de camadas ocultas", 1, 3, 1)
+            alpha = st.slider("Alpha (regularização)", 0.0001, 0.1, 0.001, step=0.0001)
+            max_iter = st.slider("Épocas de treinamento (max_iter)", 100, 1000, 300, step=50)
+
+            # Definir arquitetura
+            layers = tuple([hidden_layer_sizes] * n_layers)
+
+            with st.spinner("Treinando a rede neural..."):
+                mlp = MLPClassifier(hidden_layer_sizes=layers, alpha=alpha, max_iter=max_iter, random_state=42)
+                mlp.fit(X_train_resampled, y_train_resampled)
+                y_pred_mlp = mlp.predict(X_test)
+
+            # Avaliação
+            st.write(f"Acurácia: {accuracy_score(y_test, y_pred_mlp):.4f}")
+            st.write(f"F1-Score: {f1_score(y_test, y_pred_mlp, zero_division=0):.4f}")
+
+            # Matriz de confusão
+            cm = confusion_matrix(y_test, y_pred_mlp, labels=[0, 1])
+            fig, ax = plt.subplots(figsize=(6, 4))
+            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'],
+                        yticklabels=['Legítima', 'Fraude'])
+            ax.set_xlabel('Previsto')
+            ax.set_ylabel('Real')
+            ax.set_title('Matriz de Confusão - MLPClassifier')
+            st.pyplot(fig)
+
+            # Relatório de classificação
+            st.write("**Relatório de classificação:**")
+            st.text(classification_report(y_test, y_pred_mlp, zero_division=0))
+
+            st.write("""
+            **Explicação:**  
+            O MLPClassifier é uma rede neural feedforward com camadas ocultas configuráveis.  
+            Permite capturar padrões complexos e não lineares nos dados de fraude.
+            """)
+
+        with st.expander("🚀 Substituto do AutoML com Random Forest"):
+            st.write("""
+            O Auto-Sklearn foi substituído por RandomForestClassifier para garantir compatibilidade com Python 3.8.
+            Esta abordagem ainda fornece bons resultados com menor custo computacional.
+            """)
+
+            run_rf = st.checkbox("Executar Random Forest", value=False)
+
+            if run_rf:
+                with st.spinner("Treinando modelo Random Forest..."):
+                    from sklearn.metrics import classification_report, accuracy_score
+
+                    model = RandomForestClassifier(n_estimators=100, random_state=42)
+                    model.fit(X_train_resampled, y_train_resampled)
+
+                    y_pred_rf = model.predict(X_test)
+                    accuracy = accuracy_score(y_test, y_pred_rf)
+                    st.write(f"**Acurácia Random Forest:** {accuracy:.4f}")
+
+                    st.text("Relatório de Classificação - Random Forest")
+                    st.text(classification_report(y_test, y_pred_rf, zero_division=0))
+
+                    st.subheader("🏆 Importância das Features")
+                    feature_importances = pd.Series(model.feature_importances_, index=X.columns)
+                    fig, ax = plt.subplots(figsize=(10, 6))
+                    feature_importances.nlargest(10).plot(kind='barh', ax=ax)
+                    ax.set_title("Top 10 Features mais importantes")
+                    st.pyplot(fig)
 
     with model_tabs[2]:
         st.markdown("## Ridge e Lasso Regression para Detecção de Fraudes")
