@@ -58,7 +58,7 @@ df = load_data()
 # Criar Sidebar (Menu lateral)
 st.sidebar.image("https://cdn-icons-png.flaticon.com/512/1041/1041916.png", width=100)
 st.sidebar.title("🐰 BugsBunny Analytics")
-st.sidebar.write("Soluções Inteligentes para a Detecção de Fraudes")
+st.sidebar.write("Deteção inteligente de fraudes para proteger o seu negócio.")
 page = st.sidebar.radio("Navegação", [
     "🏠 Visão Geral",
     "📊 Análise de Fraudes",
@@ -71,17 +71,17 @@ page = st.sidebar.radio("Navegação", [
 
 # 📌 Página Inicial - Visão Geral
 if page == "🏠 Visão Geral":
-    st.markdown('<p class="big-font">🔍 Visão Geral - Detecção de Fraude</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">🔍 Visão Geral - Como identificamos fraudes</p>', unsafe_allow_html=True)
 
     # 🏢 Sobre a Plataforma
     st.subheader("💼 Sobre o BugsBunny Analytics")
     st.write("""
-    A nossa missão é ajudar empresas a detectarem fraudes financeiras com inteligência artificial e análise de dados.
-    Oferecemos soluções para monitorização, prevenção e identificação de atividades suspeitas.
+    Ajudamos empresas a identificar transações suspeitas com ferramentas inteligentes e fáceis de usar.
+Combinamos tecnologia e análise de dados para tornar a deteção de fraudes mais simples e eficaz.
     """)
 
     # 📜 Tipos Comuns de Fraude
-    st.subheader("📜 Tipos Comuns de Fraude")
+    st.subheader("📜 Fraudes mais comuns que pode encontrar")
     fraud_types = pd.DataFrame({
         "Tipo de Fraude": ["Fraude em Cartão de Crédito", "Phishing", "Roubo de Identidade", "Transações Falsificadas"],
         "Descrição": [
@@ -104,7 +104,7 @@ if page == "🏠 Visão Geral":
     col3.metric("📉 Taxa de Fraude", f"{taxa_fraude:.2f} %")
 
     # 🛠️ Variáveis Utilizadas no Modelo e no CSV
-    st.subheader("🛠️ Variáveis Utilizadas no Modelo e no CSV")
+    st.subheader("🛠️ Informações analisadas em cada transação")
     variaveis_combinadas = pd.DataFrame({
         "Variável": [
             "Time", "V1-V28", "Amount", "Class",
@@ -133,10 +133,10 @@ if page == "🏠 Visão Geral":
     st.table(variaveis_combinadas)
 
     # 🛡️ Como Prevenir Fraudes?
-    st.subheader("🛡️ Como Prevenir Fraudes?")
+    st.subheader("🛡️  Como pode proteger-se contra fraudes?")
     st.write("""
-    A prevenção de fraudes envolve um conjunto de boas práticas e tecnologias que ajudam a proteger empresas e consumidores. 
-    Aqui estão algumas recomendações essenciais:
+    Evitar fraudes é possível com pequenos cuidados e algumas ferramentas tecnológicas. 
+    Veja abaixo as recomendações que mais ajudam no dia a dia.
     """)
 
     fraud_prevention = pd.DataFrame({
@@ -151,14 +151,14 @@ if page == "🏠 Visão Geral":
     st.table(fraud_prevention)
 
     # 💡 Tecnologias e Estratégias para Prevenção
-    st.subheader("💡 Tecnologias e Estratégias para Prevenção de Fraudes")
+    st.subheader("💡 Como a tecnologia ajuda a prevenir fraudes")
     st.write("""
-    As empresas podem adotar as seguintes tecnologias para reforçar a segurança:
-    - **Machine Learning & IA**: Modelos que analisam padrões e detectam anomalias.
-    - **Autenticação Multifator (MFA)**: Verificação em duas etapas para acessos financeiros.
-    - **Monitoramento em Tempo Real**: Identificação de transações suspeitas à medida que ocorrem.
-    - **Criptografia Avançada**: Proteção de dados sensíveis contra acessos não autorizados.
-    - **Análises de Comportamento**: Identificação de padrões incomuns de uso do sistema.
+   Estas são algumas ferramentas usadas por empresas para manterem as suas transações seguras:
+- **Inteligência Artificial**: Deteta padrões estranhos automaticamente.
+- **Verificação em duas etapas**: Protege acessos com mais segurança.
+- **Alertas em tempo real**: Detetam ações suspeitas à medida que acontecem.
+- **Encriptação de dados**: Mantém as informações protegidas contra roubos.
+- **Análise de comportamento**: Identifica mudanças no padrão de utilização.
     """)
 
 # Página 2: Análise de Fraudes
@@ -168,9 +168,9 @@ elif page == "📊 Análise de Fraudes":
     legit = df[df["Class"] == 0]
 
     # 🔥 Filtros Interativos
-    st.subheader("🎯 Filtros de Análise")
-    hora_selecionada = st.slider("Selecione um intervalo de horário", 0, 23, (0, 23))
-    regiao_selecionada = st.multiselect("Filtrar por região", df["Region"].unique(), default=df["Region"].unique())
+    st.subheader("🎯 Ajustar a visualização")
+    hora_selecionada = st.slider("Escolha o intervalo de horas a analisar", 0, 23, (0, 23))
+    regiao_selecionada = st.multiselect("Escolha as regiões a incluir", df["Region"].unique(), default=df["Region"].unique())
 
     fraude_filtrada = fraud[
         (fraud["Hour"].between(hora_selecionada[0], hora_selecionada[1])) &
@@ -178,7 +178,7 @@ elif page == "📊 Análise de Fraudes":
         ]
 
     # 📊 Gráfico: Fraudes ao Longo do Dia
-    st.subheader("📆 Distribuição de Fraudes por Horário")
+    st.subheader("📆 Em que horas ocorrem mais fraudes?")
     fig, ax = plt.subplots(figsize=(8, 4))
     sns.histplot(fraude_filtrada["Hour"], bins=24, kde=True, color="red", ax=ax)
     ax.set_xlabel("Hora do Dia")
@@ -186,7 +186,7 @@ elif page == "📊 Análise de Fraudes":
     st.pyplot(fig)
 
     # 📍 Fraudes por Região
-    st.subheader("🌍 Fraudes por Região")
+    st.subheader("🌍 Onde ocorrem mais fraudes?")
     fraude_por_regiao = fraude_filtrada["Region"].value_counts(normalize=True) * 100
     fig, ax = plt.subplots(figsize=(8, 4))
     sns.barplot(x=fraude_por_regiao.index, y=fraude_por_regiao.values, palette="Reds_r", ax=ax)
@@ -194,57 +194,57 @@ elif page == "📊 Análise de Fraudes":
     st.pyplot(fig)
 
     # 📈 Boxplot: Distribuição dos Valores Fraudulentos
-    st.subheader("💰 Análise dos Valores das Fraudes")
+    st.subheader("💰Quais os valores mais comuns nas fraudes?")
     fig, ax = plt.subplots(figsize=(8, 4))
     sns.boxplot(x=fraude_filtrada["Amount"], color="red", ax=ax)
     ax.set_xlabel("Valor da Fraude ($)")
     st.pyplot(fig)
 
     # 📊 Heatmap: Fraudes por Hora e Região
-    st.subheader("🔥 Mapa de Calor: Fraudes por Hora e Região")
+    st.subheader("🔥  Quando e onde as fraudes mais acontecem?")
     heatmap_data = fraud.pivot_table(index="Region", columns="Hour", values="Class", aggfunc="count", fill_value=0)
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(heatmap_data, cmap="Reds", linewidths=0.5, ax=ax)
     st.pyplot(fig)
 
     # 📌 Insights Automáticos
-    st.subheader("📌 Insights Automáticos")
+    st.subheader("📌 O que podemos observar?")
     if len(fraude_filtrada) > 0:
         max_hora = fraude_filtrada["Hour"].value_counts().idxmax()
         max_regiao = fraude_filtrada["Region"].mode()[0]
         st.write(f"📌 **A maior concentração de fraudes ocorre às {max_hora}h.**")
         st.write(f"📌 **A região mais afetada é {max_regiao}.**")
         st.write(f"📌 **O valor médio das fraudes é ${fraude_filtrada['Amount'].mean():.2f}.**")
-        st.write(f"📌 **O maior valor de fraude registrado foi ${fraude_filtrada['Amount'].max():.2f}.**")
+        st.write(f"📌 **O maior valor de fraude registado foi ${fraude_filtrada['Amount'].max():.2f}.**")
     else:
         st.write("✅ Nenhuma fraude encontrada para os filtros selecionados.")
 
     # 📤 Exportação de Dados
-    st.subheader("📥 Exportar Dados Filtrados")
+    st.subheader("📥 Guardar resultados filtrados")
     csv_filtros = fraude_filtrada.to_csv(index=False).encode('utf-8')
-    st.download_button(label="📥 Baixar CSV", data=csv_filtros, file_name="fraudes_filtradas.csv", mime="text/csv")
+    st.download_button(label="📥 Descarregar ficheiro CSV", data=csv_filtros, file_name="fraudes_filtradas.csv", mime="text/csv")
 
 
 # 📈 Página de Estatísticas
 elif page == "📈 Estatísticas":
-    st.markdown('<p class="big-font">📈 Estatísticas Avançadas</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">📈 Estatísticas das Transações</p>', unsafe_allow_html=True)
 
-    st.subheader("📊 Médias e Medianas")
+    st.subheader("📊 Tendência Geral das Transações")
     col1, col2 = st.columns(2)
-    col1.write("### Média:")
+    col1.write("### Valor Médio:")
     col1.write(df.mean(numeric_only=True))
-    col2.write("### Mediana:")
+    col2.write("### Valor Mediano:")
     col2.write(df.median(numeric_only=True))
 
-    st.subheader("📊 Variância e Desvio Padrão")
+    st.subheader("📊 Variação dos Valores das Transações")
     col1, col2 = st.columns(2)
-    col1.write("### Variância:")
+    col1.write("### Variação (Variância):")
     col1.write(df.var(numeric_only=True))
-    col2.write("### Desvio Padrão:")
+    col2.write("### Dispersão (Desvio Padrão):")
     col2.write(df.std(numeric_only=True))
 
     # 🔥 Matriz de Correlação
-    st.subheader("🔥 Matriz de Correlação")
+    st.subheader("🔥 Ligações entre Variáveis")
     fig, ax = plt.subplots(figsize=(10, 8))
     df_numeric = df.select_dtypes(include=["number"])
     sns.heatmap(df_numeric.corr(), cmap="coolwarm", annot=False, ax=ax)
@@ -252,15 +252,9 @@ elif page == "📈 Estatísticas":
 
     # Explicação sobre as correlações
     st.write("""
-    📌 **Análise das Correlações:**
-    - **Correlações Positivas Fortes:**
-    - Rolling_Mean_Amount e Std_Amount: Correlação positiva forte
-    - Num_Transacoes_1h e algumas variáveis V: Correlações positivas moderadas
-
-    - **Correlações Negativas Importantes:**
-    - Delta_Amount e Rolling_Mean_Amount: Correlação negativa moderada
-    - Time_Diff e algumas variáveis V: Correlações negativas moderadas
-    - Delta_Media_Valor e Amount: Diferenças em relação à média tendem a ser inversas ao valor total da transação
+    📌 **O que observamos nestas ligações:**
+    - Algumas variáveis como a média e o desvio do valor tendem a andar juntas.
+    - Certas variações no valor da transação podem indicar comportamentos menos comuns.
     """)
 
     # 📊 Matriz de Covariância
@@ -268,7 +262,7 @@ elif page == "📈 Estatísticas":
     st.write(df_numeric.cov())
 
     # 📌 Análise de Fraudes por Valor e Região
-    st.subheader("💰 Fraudes por Valor e Região")
+    st.subheader("💰 Em que regiões ocorrem fraudes com maiores valores?")
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.violinplot(data=df, x="Region", y="Amount", hue="Class", split=True, ax=ax)
     ax.set_xlabel("Região")
@@ -276,7 +270,7 @@ elif page == "📈 Estatísticas":
     st.pyplot(fig)
 
     # 📌 Insights Automáticos
-    st.markdown("### 📌 Insights Automáticos")
+    st.markdown("### 📌 O que aprendemos com estes dados?")
     if df["Class"].sum() > 0:
         regiao_mais_fraudulenta = df[df["Class"] == 1]["Region"].mode()[0]
         valor_medio_fraude = df[df["Class"] == 1]["Amount"].mean()
@@ -294,14 +288,17 @@ elif page == "📂 Relatórios e Configurações":
 
     # 📑 Geração de Relatórios Personalizados
     if sub_page == "📑 Gerar Relatório":
-        st.subheader("📥 Exportação de Dados")
+        st.subheader("📥 Gerar Relatório Personalizado")
+
+        # 🎯 Filtros Avançados para o Relatório
+        st.markdown("### 🎯 Escolha o que quer incluir no seu relatório")
 
         # 🎯 Filtros Avançados para o Relatório
         colunas_disponiveis = list(df.columns)
-        colunas_selecionadas = st.multiselect("Selecione as colunas para o relatório", colunas_disponiveis,
+        colunas_selecionadas = st.multiselect("Selecione os dados que pretende visualizar:", colunas_disponiveis,
                                               default=colunas_disponiveis)
 
-        tipo_transacao = st.radio("Filtrar transações:", ["Todas", "Apenas Fraudes", "Apenas Legítimas"])
+        tipo_transacao = st.radio("Tipo de transações a incluir:", ["Todas", "Apenas Fraudes", "Apenas Legítimas"])
 
         if tipo_transacao == "Apenas Fraudes":
             df_export = df[df["Class"] == 1]
@@ -313,29 +310,29 @@ elif page == "📂 Relatórios e Configurações":
         df_export = df_export[colunas_selecionadas]
 
         # 📊 Visualizar os dados antes do download
-        st.write("🔍 **Pré-visualização dos Dados:**")
+        st.write("🔍 **Pré-visualização das Transações Selecionadas:**")
         st.dataframe(df_export.head(10))
 
         # 📊 Distribuição de Categorias de Montante
-        st.subheader("📊 Distribuição de Categorias de Montante")
+        st.subheader("📊  Quantidade de Transações por Categoria de Valor")
         fig, ax = plt.subplots(figsize=(8, 4))
         df["Amount_Category"].value_counts().plot(kind="bar", color="skyblue", ax=ax)
-        ax.set_xlabel("Categoria de Montante")
+        ax.set_xlabel("Categoria de Valor")
         ax.set_ylabel("Número de Transações")
         st.pyplot(fig)
 
         # 🌙 Proporção de Transações Noturnas
-        st.subheader("🌙 Proporção de Transações Noturnas")
+        st.subheader("🌙 Transações Noturnas e Diurnas")
         transacao_noturna = df["Transacao_Noturna"].value_counts(normalize=True) * 100
         st.write(f"**Transações Noturnas:** {transacao_noturna[1]:.2f}%")
         st.write(f"**Transações Diurnas:** {transacao_noturna[0]:.2f}%")
 
         # 📈 Média Móvel do Montante
-        st.subheader("📈 Média Móvel do Montante")
+        st.subheader("📈 Tendência da Média dos Valores")
         fig, ax = plt.subplots(figsize=(10, 5))
-        df["Rolling_Mean_Amount"].plot(ax=ax, color="blue", label="Média Móvel (5 Transações)")
-        ax.set_xlabel("Índice")
-        ax.set_ylabel("Montante ($)")
+        df["Rolling_Mean_Amount"].plot(ax=ax, color="blue", label="Média Móvel (últimas 5 Transações)")
+        ax.set_xlabel("Transações")
+        ax.set_ylabel("Valor ($)")
         ax.legend()
         st.pyplot(fig)
 
@@ -356,6 +353,7 @@ elif page == "📂 Relatórios e Configurações":
         st.pyplot(fig)
 
         # 📂 Opções de Exportação
+        st.markdown("### 💾 Exportar Relatório")
         formato = st.selectbox("Escolha o formato do relatório:", ["CSV", "Excel"])
         if formato == "CSV":
             file_data = df_export.to_csv(index=False).encode('utf-8')
@@ -370,10 +368,10 @@ elif page == "📂 Relatórios e Configurações":
 
     # ⚙ Configurações Avançadas
     elif sub_page == "⚙ Configurações Avançadas":
-        st.subheader("⚙ Ajustes do Sistema")
+        st.subheader("⚙ Preferências do Sistema")
 
         # 📌 Configuração de Alertas de Fraude
-        limite_alerta = st.slider("Definir limite de alerta para transações suspeitas ($):", 10, 5000, 1000)
+        limite_alerta = st.slider("Definir Alerta de Transações Suspeitas ($):", 10, 5000, 1000)
         metodo_analise = st.radio("Escolha o método de detecção de fraudes:", ["Regra Fixa", "Machine Learning"])
 
         # 🌍 Configuração de Regiões
@@ -382,48 +380,31 @@ elif page == "📂 Relatórios e Configurações":
                                          default=df["Region"].unique())
 
         # 🎯 Aplicar configurações (Simulação)
-        if st.button("Salvar Configurações"):
+        if st.button("Guardar Preferências"):
             st.success("✅ Configurações salvas com sucesso!")
             st.write(f"- **Limite de Alerta:** ${limite_alerta}")
-            st.write(f"- **Método de Detecção:** {metodo_analise}")
-            st.write(f"- **Regiões Monitoradas:** {', '.join(selected_region)}")
+            st.write(f"- **Tipo de verificação:** {metodo_analise}")
+            st.write(f"- **Regiões monitorizadas:** {', '.join(selected_region)}")
 
     # 🔄 Normalização e Padronização
     elif sub_page == "🔄 Normalização e Padronização":
-        st.subheader("🔄 Padronização e Normalização de Dados")
+        st.subheader("🔄 Ajuste dos Dados")
         
         st.write("""
-        ## Padronização (Standardization)
+        ## Padronização 
 
-        A padronização (Z-score normalization) é uma técnica de pré-processamento de dados que transforma os valores 
-        para que tenham média 0 e desvio padrão 1.
+        A padronização ajusta os valores para que fiquem centrados em 0, com uma variação padrão de 1. 
+        Este tipo de transformação é útil para comparações justas entre diferentes colunas.
         """)
 
         # Fórmula matemática com LaTeX
         st.latex(r'Z = \frac{X - \mu}{\sigma}')
-        
-        st.write("""
-        onde:
-        - X = valor original
-        - μ = média da distribuição 
-        - σ = desvio padrão da distribuição
-        
-        **Características:**
-        - Resulta em dados com média 0
-        - Resulta em dados com desvio padrão 1
-        - Útil quando os dados seguem distribuição normal
-        - Preserva outliers (valores extremos)
-        
-        **Vantagens:**
-        - Facilita a comparação entre diferentes atributos
-        - Essencial para algoritmos sensíveis à escala (como SVM, K-means, PCA)
-        - Melhora a convergência em algoritmos de gradient descent
-        """)
+
         
         # Demonstração de padronização com os dados
-        with st.expander("🔍 Demonstração de Padronização"):
+        with st.expander("🔍 Ver exemplo de padronização"):
             # Selecionar uma coluna para demonstração
-            selected_column = st.selectbox("Selecione uma coluna para padronização:", 
+            selected_column = st.selectbox("Escolha uma coluna para aplicar a padronização::",
                                           df.select_dtypes(include=['number']).columns)
             
             # Calcular média e desvio padrão
@@ -440,7 +421,7 @@ elif page == "📂 Relatórios e Configurações":
                 "Padronizado": standardized_data
             })
             
-            st.write("**Dados Originais vs. Padronizados:**")
+            st.write("**Comparação dos valores:**")
             st.write(comparison_df)
             
             # Mostrar estatísticas
@@ -452,42 +433,25 @@ elif page == "📂 Relatórios e Configurações":
             # Plotar comparação
             fig, ax = plt.subplots(1, 2, figsize=(10, 4))
             ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
-            ax[0].set_title("Dados Originais")
+            ax[0].set_title("Antes da Padronização")
             ax[1].hist(standardized_data, bins=10, color='green', alpha=0.7)
-            ax[1].set_title("Dados Padronizados")
+            ax[1].set_title("Depois da Padronização")
             st.pyplot(fig)
         
         st.write("""
-        ## Normalização (Min-Max Scaling)
+        ## Normalização 
 
-        A normalização transforma os dados para um intervalo específico, tipicamente [0,1] ou [-1,1].
+        A normalização transforma os valores para que fiquem entre 0 e 1 (ou entre -1 e 1), sem alterar a sua forma geral.
         """)
         
         # Fórmula matemática com LaTeX
         st.latex(r"X' = \frac{X - X_{min}}{X_{max} - X_{min}}")
-        
-        st.write("""
-        onde:
-        - X = valor original
-        - Xmin = valor mínimo do atributo
-        - Xmax = valor máximo do atributo
-        
-        **Características:**
-        - Escala os dados para um intervalo fixo
-        - Preserva a distribuição original dos dados
-        - Útil quando a distribuição não é gaussiana
-        - Mantém relações entre valores originais
-        
-        **Vantagens:**
-        - Facilita comparação entre variáveis de unidades diferentes
-        - Útil para algoritmos que exigem valores limitados
-        - Boa para técnicas como redes neurais e algoritmos baseados em distância
-        """)
+
         
         # Demonstração de normalização com os dados
-        with st.expander("🔍 Demonstração de Normalização"):
+        with st.expander("🔍 Ver exemplo de normalização"):
             # Selecionar uma coluna para demonstração
-            selected_column = st.selectbox("Selecione uma coluna para normalização:", 
+            selected_column = st.selectbox("Escolha uma coluna para aplicar a normalização:",
                                           df.select_dtypes(include=['number']).columns,
                                           key="normalization_column")
             
@@ -505,7 +469,7 @@ elif page == "📂 Relatórios e Configurações":
                 "Normalizado": normalized_data
             })
             
-            st.write("**Dados Originais vs. Normalizados:**")
+            st.write("**Comparação dos valores:**")
             st.write(comparison_df)
             
             # Mostrar estatísticas
@@ -517,48 +481,22 @@ elif page == "📂 Relatórios e Configurações":
             # Plotar comparação
             fig, ax = plt.subplots(1, 2, figsize=(10, 4))
             ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
-            ax[0].set_title("Dados Originais")
+            ax[0].set_title("Antes da Normalização")
             ax[1].hist(normalized_data, bins=10, color='red', alpha=0.7)
-            ax[1].set_title("Dados Normalizados")
+            ax[1].set_title("Depois da Normalização")
             st.pyplot(fig)
         
         st.write("""
-        ## Quando Usar Cada Técnica
-        
-        **Use Padronização quando:**
-        - Os dados seguem distribuição normal ou próxima dela
-        - O algoritmo pressupõe normalidade dos dados
-        - Há presença significativa de outliers que não devem ser ocultados
-        - Trabalhando com algoritmos como SVM, regressão linear, ou PCA
-        
-        **Use Normalização quando:**
-        - Precisa de um intervalo específico e limitado
-        - Trabalhando com redes neurais, especialmente com funções de ativação que esperam entradas em [0,1] ou [-1,1]
-        - A distribuição dos dados não é gaussiana
-        - A escala absoluta é importante para o algoritmo
-        
-        ## Importância no Big Data
-        
-        - Permite comparabilidade entre diferentes fontes de dados
-        - Reduz o impacto de diferentes magnitudes entre variáveis
-        - Essencial para algoritmos de aprendizado de máquina que são sensíveis à escala
-        - Melhora a qualidade dos resultados de clustering e classificação
-        - Facilita a integração de dados heterogêneos
+        ## Quando aplicar cada um?
+
+    - **Padronização:** Ideal quando os dados têm distribuição próxima da normal ou quando queremos destacar variações em torno da média.
+    - **Normalização:** Útil quando queremos manter todos os valores dentro de uma faixa específica (ex: [0, 1]) — por exemplo, em redes neurais.
+
+    Ambas as técnicas ajudam a preparar os dados para análises mais eficazes.
         """)
         
         # Aplicação prática
-        st.subheader("🧪 Aplicação Prática")
-        
-        st.write("""
-        Exemplo prático de como a padronização e normalização podem afetar a detecção de fraudes:
-        
-        Considere as variáveis 'Amount' e 'Time' que possuem escalas muito diferentes. Um algoritmo de detecção de fraude 
-        baseado em distância (como KNN) daria peso desproporcional à variável com maior magnitude. Ao normalizar ou 
-        padronizar, ambas as variáveis têm peso equivalente na decisão do algoritmo.
-        """)
-        
-        # Comparação visual final
-        st.subheader("📊 Comparação Visual")
+        st.subheader("🧪  Comparação Visual entre Métodos")
         
         # Selecionar duas colunas para visualização
         col1, col2 = st.columns(2)
@@ -581,7 +519,7 @@ elif page == "📂 Relatórios e Configurações":
                    c=sample_df['Class'], cmap='coolwarm', alpha=0.6)
         ax.set_xlabel(selected_column1)
         ax.set_ylabel(selected_column2)
-        ax.set_title("Dados Originais")
+        ax.set_title("Antes da Transformação")
         # Adicionar legenda manual
         import matplotlib.patches as mpatches
         red_patch = mpatches.Patch(color='red', label='Fraude')
@@ -628,7 +566,7 @@ elif page == "📂 Relatórios e Configurações":
 elif page == "🧭 Dados":
     st.markdown('<p class="big-font">🧭 Dados</p>', unsafe_allow_html=True)
 
-    st.subheader("📊 Dashboard de Variáveis")
+    st.subheader("📊 Visão Geral das Transações")
 
     # Exibir as variáveis e seus valores
     variaveis_valores = {
@@ -645,7 +583,7 @@ elif page == "🧭 Dados":
         st.metric(label=variavel, value=f"{valor:,.2f}" if isinstance(valor, float) else f"{valor:,}")
 
     # Adicionar scope das variáveis
-    st.subheader("📄 Scope das Variáveis")
+    st.subheader("📄 Descrição das Variáveis")
 
     variaveis_escopo = {
         "Time": "Tempo decorrido desde a primeira transação no dataset.",
@@ -669,7 +607,7 @@ elif page == "🧭 Dados":
         st.write(f"**{variavel}:** {descricao}")
 
     # Adicionar gráficos de valores mínimo e máximo
-    st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
+    st.subheader("📊 Comparativo de Valores Mínimos e Máximos")
 
     # Agregar dados de V1-V28 em Vx
     df["Vx"] = df[[f"V{i}" for i in range(1, 29)]].sum(axis=1)
@@ -686,7 +624,7 @@ elif page == "🧭 Dados":
     st.pyplot(fig)
 
     # Adicionar gráficos de valores mínimo e máximo
-    st.subheader("📊 Gráficos de Valores Mínimo e Máximo")
+    st.subheader("📊 Amplitude das Outras Variáveis Numéricas")
 
     # Remover colunas indesejadas
     columns_to_exclude = [f"V{i}" for i in range(1, 29)] + ["Vx", "Hour", "Time_Diff", "Class", "Transacao_Noturna"]
@@ -709,7 +647,7 @@ elif page == "🧭 Dados":
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.bar(min_vals.index, min_vals.values, color="blue", label="Min")
     ax.bar(max_vals.index, max_vals.values, color="red", label="Max", alpha=0.7)
-    ax.set_title("Valores Mínimo e Máximo das Variáveis Especificadas")
+    ax.set_title("Valores Mínimo e Máximo das Variáveis Numéricas")
     ax.set_ylabel("Valores")
     ax.legend()
     plt.xticks(rotation=90)
@@ -718,9 +656,9 @@ elif page == "🧭 Dados":
     # Adicionar legenda explicativa
     st.markdown("""
     **Legenda:**
-    - **Min**: O valor mínimo registrado para a variável.
-    - **Max**: O valor máximo registrado para a variável.
-    Estes valores ajudam a entender a amplitude e a variação dos dados para cada variável.
+    - **Min**: Valor mais baixo registado para a variável.
+    - **Max**:  Valor mais alto registado para a variável.
+    Estes indicadores ajudam a perceber a variação e o alcance dos dados analisados.
     """)
 
 # Nova página: Machine Learning
@@ -733,16 +671,11 @@ elif page == "🤖 Machine Learning":
         st.markdown("## Introdução ao Machine Learning")
         
         # Conceitos básicos
-        st.subheader("🔍 Conceitos Básicos")
+        st.subheader("🔍 O que é Machine Learning?")
         st.write("""
-        **Machine Learning (ML)** é um subcampo da Inteligência Artificial que permite aos computadores aprender 
-        sem programação explícita. Ao contrário da programação tradicional onde escrevemos regras específicas, 
-        no ML os algoritmos aprendem padrões diretamente a partir dos dados.
+        O Machine Learning permite que os computadores **reconheçam padrões automaticamente** a partir de dados — sem precisarmos dizer exatamente o que fazer em cada situação.
         
-        A principal diferença é que em ML:
-        - Os dados ensinam o computador
-        - O sistema melhora com a experiência
-        - Identifica padrões estatisticamente significativos
+        Em vez de programar regras fixas, o sistema **aprende com exemplos anteriores** para prever ou tomar decisões em situações futuras.
         """)
         
         # Comparação visual entre programação tradicional e ML
@@ -774,24 +707,17 @@ elif page == "🤖 Machine Learning":
         with tab1:
             st.markdown("### Aprendizado Supervisionado")
             st.write("""
-            No aprendizado supervisionado, o algoritmo é treinado em um conjunto de dados rotulado, 
-            onde para cada exemplo temos uma entrada e a saída desejada.
-            
-            **Exemplos de aplicações:**
-            - Classificação de e-mails em spam ou não-spam
-            - Previsão de preços de imóveis
-            - Diagnóstico médico
-            
-            **Algoritmos populares:**
-            - Regressão Linear/Logística
-            - Árvores de Decisão
-            - Random Forests
-            - Support Vector Machines (SVM)
-            - Redes Neurais
+            Neste tipo de aprendizado, o sistema **aprende com exemplos que já têm a resposta certa**. 
+            Assim, pode depois aplicar esse conhecimento para prever novos casos.
+
+            **Exemplos:**
+            - Identificar e-mails como spam ou não spam
+            - Prever o valor de uma casa
+            - Distinguir transações legítimas de fraudulentas
             """)
             
             # Demonstração visual simples
-            st.markdown("#### Exemplo: Classificação de Fraudes")
+            st.markdown("####🖼️ Exemplo Visual: Transações Legítimas vs Fraudulentas")
             
             fig, ax = plt.subplots(figsize=(6, 4))
             
@@ -800,7 +726,7 @@ elif page == "🤖 Machine Learning":
             ax.scatter(sample["Amount"], sample["V1"], c=sample["Class"], cmap="coolwarm", s=50)
             ax.set_xlabel("Valor da Transação")
             ax.set_ylabel("Componente V1")
-            ax.set_title("Exemplo de Classificação: Transações Legítimas vs Fraudulentas")
+            ax.set_title("Classificação de Transações")
             
             # Adicionar legenda manual
             import matplotlib.patches as mpatches
@@ -813,25 +739,15 @@ elif page == "🤖 Machine Learning":
         with tab2:
             st.markdown("### Aprendizado Não Supervisionado")
             st.write("""
-            No aprendizado não supervisionado, o algoritmo trabalha com dados não rotulados, 
-            buscando encontrar estruturas ou padrões intrínsecos nos dados.
-            
-            **Exemplos de aplicações:**
-            - Segmentação de clientes
-            - Agrupamento de notícias semelhantes
-            - Detecção de anomalias
-            - Redução de dimensionalidade
-            
-            **Algoritmos populares:**
-            - K-means
-            - DBSCAN
-            - Hierarchical Clustering
-            - PCA (Principal Component Analysis)
-            - t-SNE
+            Neste caso, o sistema **não sabe as respostas certas**. Ele tenta encontrar **agrupamentos ou padrões escondidos** nos dados por conta própria.
+
+            **Exemplos:**
+            - Agrupar clientes com perfis semelhantes
+            - Identificar padrões incomuns
             """)
             
             # Demonstração visual de clustering
-            st.markdown("#### Exemplo: Clustering de Transações")
+            st.markdown("#### 🖼️ Exemplo Visual: Agrupamento de Transações")
             
             from sklearn.cluster import KMeans
             
@@ -848,7 +764,7 @@ elif page == "🤖 Machine Learning":
             scatter = ax.scatter(X[:, 0], X[:, 1], c=sample_clusters, cmap="viridis", s=50)
             ax.set_xlabel("Valor da Transação")
             ax.set_ylabel("Componente V1")
-            ax.set_title("Clustering de Transações (K-means, k=3)")
+            ax.set_title("Agrupamento de Transações (K-means)")
             
             # Adicionar centróides
             ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
@@ -860,8 +776,7 @@ elif page == "🤖 Machine Learning":
         with tab3:
             st.markdown("### Aprendizagem por Reforço")
             st.write("""
-            No aprendizagem por reforço, o algoritmo aprende a tomar decisões interagindo com um ambiente,
-            recebendo recompensas ou penalizações pelas ações tomadas.
+            Aqui, o sistema **aprende por tentativa e erro**. Ele testa ações e **recebe recompensas ou penalizações** com base no que acontece. Com o tempo, aprende quais decisões levam aos melhores resultados.
             """)
             
             st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
@@ -871,13 +786,13 @@ elif page == "🤖 Machine Learning":
     st.subheader("⚙️ Processo de Machine Learning")
     
     process_steps = {
-        "1. Preparação de Dados": "Coleta, limpeza, normalização e divisão em conjuntos de treinamento/teste",
+        "1. Preparação de Dados": "Recolha, limpeza, normalização e divisão em conjuntos de treinamento/teste",
         "2. Seleção de Modelo": "Escolha do algoritmo mais adequado para o problema",
         "3. Treinamento": "Ajuste dos parâmetros do modelo usando dados de treinamento",
         "4. Validação": "Avaliação do desempenho em dados não vistos anteriormente",
-        "5. Ajuste de Hiperparâmetros": "Otimização do modelo para melhorar o desempenho",
-        "6. Implantação": "Colocação do modelo em produção",
-        "7. Monitoramento": "Acompanhamento contínuo do desempenho"
+        "5. Otimização": "Melhoria do modelo ajustando as suas configurações",
+        "6. Implementação": "Colocação do modelo em produção",
+        "7. Monitorização": "Acompanhamento contínuo do desempenho"
     }
     
     col1, col2 = st.columns(2)
@@ -889,50 +804,48 @@ elif page == "🤖 Machine Learning":
             col2.markdown(f"**{step}:** {desc}")
     
     # Aplicações em detecção de fraude
-    st.subheader("💳 Machine Learning na Detecção de Fraudes")
+    st.subheader("💳 Como o Machine Learning Ajuda a Detetar Fraudes")
     
     st.write("""
-    A detecção de fraudes é uma das aplicações mais importantes de machine learning no setor financeiro.
-    Algoritmos ML podem identificar padrões suspeitos e anomalias que seriam difíceis de detectar manualmente.
-    
-    **Benefícios:**
-    
-    - **Processamento em tempo real**: análise de transações à medida que ocorrem
-    - **Adaptabilidade**: aprendizado contínuo com novos padrões de fraude
-    - **Redução de falsos positivos**: melhoria na precisão da detecção
-    - **Escalabilidade**: capacidade de processar milhões de transações
-    
-    **Desafios:**
-    
-    - **Dados desbalanceados**: geralmente há muito mais transações legítimas que fraudulentas
-    - **Adaptação a novas fraudes**: fraudadores evoluem constantemente suas técnicas
-    - **Latência**: necessidade de respostas em milissegundos
-    - **Dados sensíveis**: questões de privacidade e segurança
+    A deteção de fraudes é uma das aplicações mais valiosas do machine learning no setor financeiro. 
+Estes modelos conseguem identificar comportamentos suspeitos que muitas vezes escapam à análise humana.
+
+**Vantagens:**
+- ⚡ Análise em tempo real
+- 📈 Capacidade de adaptação a novos tipos de fraude
+- 🎯 Redução de falsos alarmes
+- 🧠 Processamento de grandes volumes de transações
+
+**Desafios:**
+- ⚖️ Poucas fraudes em comparação com transações normais (desequilíbrio nos dados)
+- 🕵️‍♂️ Novas formas de fraude surgem constantemente
+- ⏱️ Necessidade de decisões rápidas
+- 🔐 Proteção dos dados dos clientes
     """)
     
     # Métricas de avaliação
-    st.subheader("📏 Métricas de Avaliação em Detecção de Fraudes")
+    st.subheader("📏 Como Avaliamos se um Modelo é Bom?")
     
     metrics = {
-        "Acurácia": "Porcentagem total de previsões corretas",
+        "Acurácia": "Percentagem total de previsões corretas",
         "Precisão": "Entre os casos classificados como fraude, quantos realmente são fraude",
         "Recall (Sensibilidade)": "Entre as fraudes reais, quantas foram detectadas corretamente",
-        "F1-Score": "Média harmônica entre precisão e recall",
+        "F1-Score": "Equilíbrio entre precisão e recall",
         "AUC-ROC": "Capacidade de distinguir entre classes (0.5 = aleatório, 1.0 = perfeito)",
-        "Custo de classificação errada": "Perda financeira devido a falsos positivos e falsos negativos"
+        "Custo de erros": "Impacto financeiro de uma deteção incorreta"
     }
     
     for metric, desc in metrics.items():
         st.markdown(f"**{metric}**: {desc}")
     
     # Demonstração prática
-    st.subheader("🧪 Demonstração Prática")
+    st.subheader("🧪 Exemplo Simples de Detecção de Fraudes")
     
     with st.expander("Clique para ver uma demonstração simplificada de detecção de fraudes"):
         st.write("""
-        Abaixo está um exemplo simplificado de como um modelo de classificação pode ser usado para detectar fraudes.
-        
-        Este exemplo usa apenas duas variáveis para facilitar a visualização, mas modelos reais usariam múltiplas variáveis.
+        Abaixo mostramos uma simulação de como um modelo pode aprender a distinguir fraudes de transações legítimas.
+
+⚠️ Este é apenas um exemplo simples, com poucas variáveis, usado apenas para fins educativos.
         """)
         
         from sklearn.model_selection import train_test_split
@@ -1008,18 +921,13 @@ elif page == "🤖 Machine Learning":
         st.pyplot(fig)
         
         st.write("""
-        **Observação:** Este é apenas um exemplo simplificado para fins educativos. 
-        Em cenários reais, seriam necessários:
-        - Pré-processamento mais extenso dos dados
-        - Utilização de mais features
-        - Ajuste de hiperparâmetros
-        - Técnicas para lidar com dados desbalanceados
-        - Validação cruzada
+       📌 **Nota:** Este exemplo foi simplificado para melhor compreensão. 
+Em situações reais, são utilizados muitos mais dados e técnicas para garantir uma deteção mais precisa e justa.
         """)
     
     with model_tabs[1]:
         # Mover a demonstração de classificação para esta tab
-        st.markdown("## Classificação para Detecção de Fraudes")
+        st.markdown("##  🕵️‍♂️ Classificação para Identificar Fraudes")
         
         # Carregar dados
         df = pd.read_csv("creditcard.csv")
@@ -1029,21 +937,22 @@ elif page == "🤖 Machine Learning":
         df["Class"] = df["Class"].astype("category")
         
         # Amostra dos dados
-        st.subheader("Amostra dos Dados")
+        st.subheader("🔍 Exemplo de Transações")
+        st.write("Aqui está uma amostra aleatória dos dados utilizados na análise:")
         st.write(df.sample(10))
         
         # Contagem das classes
-        st.subheader("Distribuição das Classes")
+        st.subheader("📊 Quantas fraudes temos?")
         class_counts = df["Class"].value_counts()
         st.bar_chart(class_counts)
         
         # Seleção de variáveis
-        st.subheader("Seleção de Variáveis")
+        st.subheader("🧩 Quais variáveis vamos usar?")
         
         all_columns = df.columns.tolist()
         target = "Class"
         features = st.multiselect(
-            "Selecione as variáveis independentes (features):",
+            "Escolha os dados que o modelo deve usar para aprender:",
             options=all_columns,
             default=all_columns[:-1]  # Selecionar todas menos a última (que é a variável alvo)
         )
@@ -1052,7 +961,7 @@ elif page == "🤖 Machine Learning":
         if target in features:
             features.remove(target)
         
-        st.write("Features selecionadas:", features)
+        st.write("✅ Variáveis selecionadas:", features)
         
         # Dividir dados
         X = df[features]
@@ -1062,11 +971,11 @@ elif page == "🤖 Machine Learning":
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
         
         # Treinamento do modelo
-        st.subheader("Treinamento do Modelo")
+        st.subheader("⚙️ Escolha o modelo de classificação")
         
         # Selecionar modelo
         model_type = st.selectbox(
-            "Escolha o tipo de modelo:",
+            "Modelo:",
             ["Random Forest", "Regressão Logística", "Árvore de Decisão"]
         )
 
@@ -1096,7 +1005,7 @@ elif page == "🤖 Machine Learning":
                 from sklearn import tree
 
                 # Visualização da árvore
-                st.subheader("🌳 Visualização da Árvore de Decisão")
+                st.subheader("🌳 Visualização da Árvore")
                 fig, ax = plt.subplots(figsize=(16, 6))
                 tree.plot_tree(
                     model,
@@ -1110,10 +1019,10 @@ elif page == "🤖 Machine Learning":
                 )
                 st.pyplot(fig)
                 st.write(
-                    "**A árvore acima mostra as principais regras de decisão aprendidas pelo modelo (apenas os 3 primeiros níveis para facilitar a visualização).**")
+                    "**Nota:** Esta árvore mostra como o modelo toma decisões com base nas variáveis selecionadas.")
 
                 # Análise do índice Gini
-                st.subheader("📊 Análise do Índice Gini dos Nós")
+                st.subheader("📊 Análise do Índice Gini dos Nós da Árvore")
                 gini_values = model.tree_.impurity
                 node_samples = model.tree_.n_node_samples
                 gini_df = pd.DataFrame({
@@ -1222,36 +1131,32 @@ elif page == "🤖 Machine Learning":
             st.pyplot(fig)
 
         # Add to model_tabs[1] after the existing classification models
-        st.subheader("🚀 Boosting Methods")
-        
+        st.subheader("🚀 Testar Modelos Avançados")
+
         st.write("""
-        ### Ensemble Methods: Boosting
-        
-        Boosting algorithms build multiple models sequentially, with each model correcting 
-        the errors of its predecessors. These are particularly effective for fraud detection.
-        
-        - **AdaBoost**: Adaptive Boosting focuses on misclassified instances by increasing their weights
-        - **XGBoost**: eXtreme Gradient Boosting uses gradient descent to minimize errors
+       ### Experimente diferentes modelos para detetar possíveis fraudes
+
+       Aqui pode comparar os resultados de dois métodos populares que analisam padrões nos dados. Basta ativar e ajustar os parâmetros desejados.
         """)
-        
+
         # Create columns for the two models
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.write("#### AdaBoost")
-            
-            run_ada = st.checkbox("Train AdaBoost Model", value=False)
+
+            run_ada = st.checkbox("Ativar AdaBoost", value=False)
             if run_ada:
                 from sklearn.ensemble import AdaBoostClassifier
-                
+
                 # Set parameters
-                n_estimators = st.slider("Number of Estimators (AdaBoost)", 50, 300, 100)
-                learning_rate = st.slider("Learning Rate (AdaBoost)", 0.01, 2.0, 1.0, 0.01)
-                
-                with st.spinner("Training AdaBoost model..."):
+                n_estimators = st.slider("Número de estimadores (AdaBoost)", 50, 300, 100)
+                learning_rate = st.slider("Taxa de aprendizagem (AdaBoost)", 0.01, 2.0, 1.0, 0.01)
+
+                with st.spinner("A treinar modelo..."):
                     # Start timing
                     start = time.time()
-                    
+
                     # Create and train model
                     ada_model = AdaBoostClassifier(
                         n_estimators=n_estimators,
@@ -1259,51 +1164,51 @@ elif page == "🤖 Machine Learning":
                         random_state=42
                     )
                     ada_model.fit(X_train_resampled, y_train_resampled)
-                    
+
                     # End timing
                     duration = time.time() - start
                     st.write(f"⏱️ Training time: {duration:.2f} seconds")
-                    
+
                     # Make predictions
                     y_pred_ada = ada_model.predict(X_test)
-                    
+
                     # Calculate metrics
                     ada_accuracy = accuracy_score(y_test, y_pred_ada)
                     ada_precision = precision_score(y_test, y_pred_ada, zero_division=0)
                     ada_recall = recall_score(y_test, y_pred_ada, zero_division=0)
                     ada_f1 = f1_score(y_test, y_pred_ada, zero_division=0)
-                    
+
                     # Display metrics
-                    st.metric("Accuracy", f"{ada_accuracy:.4f}")
-                    st.metric("Precision", f"{ada_precision:.4f}")
+                    st.metric("Acurácia", f"{ada_accuracy:.4f}")
+                    st.metric("Precisão", f"{ada_precision:.4f}")
                     st.metric("Recall", f"{ada_recall:.4f}")
                     st.metric("F1 Score", f"{ada_f1:.4f}")
-                    
+
                     # Display confusion matrix
                     cm_ada = confusion_matrix(y_test, y_pred_ada)
                     fig, ax = plt.subplots(figsize=(5, 4))
                     sns.heatmap(cm_ada, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
                     ax.set_xlabel('Previsto')
                     ax.set_ylabel('Real')
-                    ax.set_title('Matriz de Confusão')
+                    ax.set_title('Matriz de Confusão - AdaBoost')
                     st.pyplot(fig)
-        
+
         with col2:
             st.write("#### XGBoost")
-            
-            run_xgb = st.checkbox("Train XGBoost Model", value=False)
+
+            run_xgb = st.checkbox("Ativar XGBoost", value=False)
             if run_xgb:
                 import xgboost as xgb
-                
+
                 # Set parameters
-                n_estimators_xgb = st.slider("Number of Estimators (XGBoost)", 50, 300, 100)
-                max_depth = st.slider("Max Depth (XGBoost)", 3, 10, 6)
-                learning_rate_xgb = st.slider("Learning Rate (XGBoost)", 0.01, 0.3, 0.1, 0.01)
-                
-                with st.spinner("Training XGBoost model..."):
+                n_estimators_xgb = st.slider("Número de estimadores (XGBoost)", 50, 300, 100)
+                max_depth = st.slider("Profundidade máxima (XGBoost)", 3, 10, 6)
+                learning_rate_xgb = st.slider("Taxa de aprendizagem (XGBoost)", 0.01, 0.3, 0.1, 0.01)
+
+                with st.spinner("A treinar modelo..."):
                     # Start timing
                     start = time.time()
-                    
+
                     # Create and train model
                     xgb_model = xgb.XGBClassifier(
                         n_estimators=n_estimators_xgb,
@@ -1312,104 +1217,100 @@ elif page == "🤖 Machine Learning":
                         random_state=42
                     )
                     xgb_model.fit(X_train_resampled, y_train_resampled)
-                    
+
                     # End timing
                     duration = time.time() - start
-                    st.write(f"⏱️ Training time: {duration:.2f} seconds")
-                    
+                    st.write(f"⏱️ Tempo de treino: {duration:.2f} segundos")
+
                     # Make predictions
                     y_pred_xgb = xgb_model.predict(X_test)
-                    
+
                     # Calculate metrics
                     xgb_accuracy = accuracy_score(y_test, y_pred_xgb)
                     xgb_precision = precision_score(y_test, y_pred_xgb, zero_division=0)
                     xgb_recall = recall_score(y_test, y_pred_xgb, zero_division=0)
                     xgb_f1 = f1_score(y_test, y_pred_xgb, zero_division=0)
-                    
+
                     # Display metrics
-                    st.metric("Accuracy", f"{xgb_accuracy:.4f}")
-                    st.metric("Precision", f"{xgb_precision:.4f}")
+                    st.metric("Acurácia", f"{xgb_accuracy:.4f}")
+                    st.metric("Precisão", f"{xgb_precision:.4f}")
                     st.metric("Recall", f"{xgb_recall:.4f}")
                     st.metric("F1 Score", f"{xgb_f1:.4f}")
-                    
+
                     # Display confusion matrix
                     cm_xgb = confusion_matrix(y_test, y_pred_xgb)
                     fig, ax = plt.subplots(figsize=(5, 4))
                     sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
                     ax.set_xlabel('Previsto')
                     ax.set_ylabel('Real')
-                    ax.set_title('Matriz de Confusão')
+                    ax.set_title('Matriz de Confusão - XGBoost')
                     st.pyplot(fig)
-                    
+
                     # Feature importance for XGBoost
                     fig, ax = plt.subplots(figsize=(8, 6))
                     xgb.plot_importance(xgb_model, ax=ax, max_num_features=10)
                     plt.title("XGBoost Feature Importance")
                     st.pyplot(fig)
-        
+
         # Compare boosting models if both have been trained
         if run_ada and run_xgb:
-            st.subheader("Comparison of Boosting Methods")
-            
+            st.subheader("📊 Comparação entre AdaBoost e XGBoost")
+
             # Create comparison dataframe
             boost_comparison = pd.DataFrame({
-                'Model': ['AdaBoost', 'XGBoost'],
-                'Accuracy': [ada_accuracy, xgb_accuracy],
-                'Precision': [ada_precision, xgb_precision],
+                'Modelo': ['AdaBoost', 'XGBoost'],
+                'Acurácia': [ada_accuracy, xgb_accuracy],
+                'Precisão': [ada_precision, xgb_precision],
                 'Recall': [ada_recall, xgb_recall],
                 'F1 Score': [ada_f1, xgb_f1]
             })
-            
+
             st.write(boost_comparison)
-            
+
             # Plot comparison
             fig, ax = plt.subplots(figsize=(10, 6))
-            
+
             x = np.arange(2)
             width = 0.2
-            metrics = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
+            metrics = ['Acurácia', 'Precisão', 'Recall', 'F1 Score']
             colors = ['blue', 'green', 'red', 'purple']
-            
+
             for i, metric in enumerate(metrics):
                 values = boost_comparison[metric].values
                 ax.bar(x + i*width - 0.3, values, width, label=metric, color=colors[i])
-            
+
             ax.set_xticks(x)
-            ax.set_xticklabels(boost_comparison['Model'])
-            ax.set_ylabel('Score')
-            ax.set_title('Boosting Methods Comparison')
+            ax.set_xticklabels(boost_comparison['Modelo'])
+            ax.set_ylabel('Valor')
+            ax.set_title('Comparação dos Modelos Boosting')
             ax.legend()
-            
+
             st.pyplot(fig)
-        
+
         # Add to model_tabs[1] after boosting methods
-        st.subheader("🔄 Support Vector Machines")
-        
+        st.subheader("🔄 Avaliar Modelos com SVM")
+
         st.write("""
-        ### SVM with Multiple Kernels
-        
-        Support Vector Machines (SVMs) are powerful classifiers that work by finding the hyperplane 
-        that best separates classes in the feature space. Different kernels allow SVMs to handle 
-        both linear and non-linear classification tasks.
+        Pode também experimentar outro tipo de modelo para comparar resultados. Aqui é possível testar diferentes versões (chamadas **kernels**) e ver qual funciona melhor com os dados.
         """)
-        
-        run_svm = st.checkbox("Train SVM Models with Different Kernels", value=False)
-        
+
+        run_svm = st.checkbox("Testar modelos SVM", value=False)
+
         if run_svm:
             from sklearn.svm import SVC
-            
+
             # Kernels to test
             kernels = ["linear", "poly", "rbf", "sigmoid"]
-            
+
             # Create dictionary to store results
             svm_results = {}
             training_times = {}
-            
-            with st.spinner("Training SVM models with different kernels - this may take a while..."):
+
+            with st.spinner("A treinar modelos SVM com diferentes configurações..."):
                 for kernel in kernels:
                     # Start timing
                     start = time.time()
-                    
+
                     # Create and train model
                     svm_model = SVC(
                         kernel=kernel,
@@ -1417,40 +1318,41 @@ elif page == "🤖 Machine Learning":
                         random_state=42,
                         class_weight='balanced'
                     )
-                    
+
                     # Fit model
                     svm_model.fit(X_train_resampled, y_train_resampled)
-                    
+
                     # End timing
                     duration = time.time() - start
                     training_times[kernel] = duration
-                    
+
                     # Make predictions
                     y_pred_svm = svm_model.predict(X_test)
-                    
+
                     # Calculate metrics
                     svm_accuracy = accuracy_score(y_test, y_pred_svm)
                     svm_precision = precision_score(y_test, y_pred_svm, zero_division=0)
                     svm_recall = recall_score(y_test, y_pred_svm, zero_division=0)
                     svm_f1 = f1_score(y_test, y_pred_svm, zero_division=0)
-                    
+
                     # Store results
                     svm_results[kernel] = {
-                        'Accuracy': svm_accuracy,
-                        'Precision': svm_precision,
+                        'Acurácia': svm_accuracy,
+                        'Precisão': svm_precision,
                         'Recall': svm_recall,
                         'F1 Score': svm_f1,
-                        'Training Time': duration
+                        'Tempo de Treino': duration
                     }
-            
+
             # Display results as table
-            st.write("### SVM Performance by Kernel Type")
+            st.subheader("📊 Resultados dos Modelos SVM")
+            st.write("Aqui pode ver o desempenho dos diferentes tipos de SVM testados:")
             svm_df = pd.DataFrame.from_dict(svm_results, orient='index')
             st.write(svm_df)
             
             # Find best kernel
             best_kernel = svm_df['F1 Score'].idxmax()
-            st.write(f"Best kernel based on F1 Score: **{best_kernel}**")
+            st.write(f"🟢 Melhor desempenho (F1 Score): **{best_kernel}**")
             
             # Plot performance metrics
             fig, ax = plt.subplots(figsize=(10, 6))
@@ -1466,8 +1368,8 @@ elif page == "🤖 Machine Learning":
             
             ax.set_xticks(x)
             ax.set_xticklabels(kernels)
-            ax.set_ylabel('Score')
-            ax.set_title('SVM Performance by Kernel Type')
+            ax.set_ylabel('Valor')
+            ax.set_title('Comparação dos Modelos SVM por Tipo')
             ax.legend()
             
             st.pyplot(fig)
@@ -1475,40 +1377,22 @@ elif page == "🤖 Machine Learning":
             # Plot training times
             fig, ax = plt.subplots(figsize=(10, 6))
             ax.bar(kernels, [training_times[k] for k in kernels], color='teal')
-            ax.set_xlabel('Kernel Type')
-            ax.set_ylabel('Training Time (seconds)')
-            ax.set_title('SVM Training Time by Kernel')
+            ax.set_xlabel('Tipo de Kernel')
+            ax.set_ylabel('Tempo de Treino (segundos)')
+            ax.set_title('Tempo de Treino por Tipo de SVM')
             for i, v in enumerate([training_times[k] for k in kernels]):
                 ax.text(i, v + 0.1, f"{v:.2f}s", ha='center')
             st.pyplot(fig)
-            
-            st.write("""
-            ### SVM Kernel Explanation
-            
-            - **Linear Kernel**: Effective when data is linearly separable. Fast but less flexible.
-            - **Polynomial Kernel**: Can model curved decision boundaries with polynomial functions.
-            - **RBF (Radial Basis Function)**: Creates complex, non-linear decision boundaries. Often best for diverse data.
-            - **Sigmoid Kernel**: Similar to a neural network activation function.
-            For fraud detection, RBF kernel typically performs best as fraud patterns are rarely linear.
-            """)
+
 
         # Add to model_tabs[1] after SVM section
-        st.subheader("📊 Naive Bayes Classifier")
-        
-        st.write("""
-        ### Naive Bayes Classification
-        
-        Naive Bayes is a probabilistic classifier based on Bayes' theorem with an assumption of 
-        independence between features. Despite this "naive" assumption, it works surprisingly 
-        well in many real-world situations, including fraud detection.
-        """)
-        
-        run_nb = st.checkbox("Train Naive Bayes Model", value=False)
+        st.subheader("📊 Modelo Naive Bayes")
+        run_nb = st.checkbox("Testar Modelo Naive Bayes", value=False)
         
         if run_nb:
             from sklearn.naive_bayes import GaussianNB
             
-            with st.spinner("Training Naive Bayes model..."):
+            with st.spinner("A treinar modelo..."):
                 # Start timing
                 start = time.time()
                 
@@ -1518,7 +1402,7 @@ elif page == "🤖 Machine Learning":
                 
                 # End timing
                 duration = time.time() - start
-                st.write(f"⏱️ Training time: {duration:.2f} seconds")
+                st.write(f"⏱️ Tempo de treino: {duration:.2f} segundos")
                 
                 # Make predictions
                 y_pred_nb = nb_model.predict(X_test)
@@ -1534,8 +1418,8 @@ elif page == "🤖 Machine Learning":
                 
                 # Display metrics
                 col1, col2 = st.columns(2)
-                col1.metric("Accuracy", f"{nb_accuracy:.4f}")
-                col1.metric("Precision", f"{nb_precision:.4f}")
+                col1.metric("Acurácia", f"{nb_accuracy:.4f}")
+                col1.metric("Precisão", f"{nb_precision:.4f}")
                 col2.metric("Recall", f"{nb_recall:.4f}")
                 col2.metric("F1 Score", f"{nb_f1:.4f}")
                 
@@ -1547,7 +1431,7 @@ elif page == "🤖 Machine Learning":
                            yticklabels=['Legítima', 'Fraude'])
                 ax.set_xlabel('Previsto')
                 ax.set_ylabel('Real')
-                ax.set_title('Matriz de Confusão')
+                ax.set_title('Matriz de Confusão - Naive Bayes')
                 st.pyplot(fig)
                 
                 # Classification report
@@ -1555,15 +1439,15 @@ elif page == "🤖 Machine Learning":
                 st.text(classification_report(y_test, y_pred_nb))
                 
                 # Plot probability distribution
-                st.write("### Fraud Probability Distribution")
+                st.write("### Distribuição de Probabilidades de Fraude")
                 fig, ax = plt.subplots(figsize=(10, 6))
                 sns.histplot(
                     data=pd.DataFrame({
-                        'Fraud Probability': y_proba_nb[:, 1],
-                        'Actual Class': y_test
+                        'Probabilidade de Fraude': y_proba_nb[:, 1],
+                        'Classe Real': y_test
                     }),
-                    x='Fraud Probability',
-                    hue='Actual Class',
+                    x='Probabilidade de Fraude',
+                    hue='Classe Real',
                     bins=50,
                     ax=ax
                 )
@@ -1572,8 +1456,8 @@ elif page == "🤖 Machine Learning":
                 st.pyplot(fig)
                 
                 # Add custom threshold slider
-                st.write("### Custom Threshold Adjustment")
-                nb_threshold = st.slider("Decision Threshold for Naive Bayes", 0.0, 1.0, 0.5, 0.01)
+                st.write("### Ajustar Limiar de Decisão")
+                nb_threshold = st.slider("Limiar (threshold)", 0.0, 1.0, 0.5, 0.01)
                 
                 # Apply custom threshold
                 y_pred_custom_nb = (y_proba_nb[:, 1] >= nb_threshold).astype(int)
@@ -1586,10 +1470,10 @@ elif page == "🤖 Machine Learning":
                 
                 # Display metrics with custom threshold
                 col1, col2 = st.columns(2)
-                col1.metric("Accuracy (Custom Threshold)", f"{custom_accuracy:.4f}")
-                col1.metric("Precision (Custom Threshold)", f"{custom_precision:.4f}")
-                col2.metric("Recall (Custom Threshold)", f"{custom_recall:.4f}")
-                col2.metric("F1 Score (Custom Threshold)", f"{custom_f1:.4f}")
+                col1.metric("Acurácia (Limiar)", f"{custom_accuracy:.4f}")
+                col1.metric("Precisão (Limiar)", f"{custom_precision:.4f}")
+                col2.metric("Recall (Limiar)", f"{custom_recall:.4f}")
+                col2.metric("F1 Score (Limiar)", f"{custom_f1:.4f}")
                 
                 # Display confusion matrix with custom threshold
                 cm_custom_nb = confusion_matrix(y_test, y_pred_custom_nb)
@@ -1599,7 +1483,7 @@ elif page == "🤖 Machine Learning":
                            yticklabels=['Legítima', 'Fraude'])
                 ax.set_xlabel('Previsto')
                 ax.set_ylabel('Real')
-                ax.set_title(f'Naive Bayes Confusion Matrix (Threshold={nb_threshold:.2f})')
+                ax.set_title(f'Matriz de Confusão - Limiar{nb_threshold:.2f}')
                 st.pyplot(fig)
 
         # K-Nearest Neighbors (K-NN)
@@ -1614,7 +1498,7 @@ elif page == "🤖 Machine Learning":
             k_values = list(range(k_range[0], k_range[1] + 1))
             f1_scores = []
 
-            with st.spinner("Treinando K-NN para diferentes valores de k..."):
+            with st.spinner("A treinar modelos para diferentes valores de k..."):
                 for k in k_values:
                     knn = KNeighborsClassifier(n_neighbors=k)
                     knn.fit(X_train_resampled, y_train_resampled)
@@ -1627,12 +1511,12 @@ elif page == "🤖 Machine Learning":
             ax.plot(k_values, f1_scores, marker='o')
             ax.set_xlabel("Número de Vizinhos (k)")
             ax.set_ylabel("F1-Score")
-            ax.set_title("F1-Score para diferentes valores de k (K-NN)")
+            ax.set_title("Desempenho do K-NN")
             st.pyplot(fig)
 
             # Melhor k
             best_k = k_values[np.argmax(f1_scores)]
-            st.write(f"Melhor valor de k: **{best_k}** (F1-Score = {max(f1_scores):.4f})")
+            st.write(f"Melhor valor k encontrado: **{best_k}** (F1-Score = {max(f1_scores):.4f})")
 
             # Avaliação detalhada para o melhor k
             knn_best = KNeighborsClassifier(n_neighbors=best_k)
@@ -1649,19 +1533,14 @@ elif page == "🤖 Machine Learning":
             ax.set_title(f'Matriz de Confusão - K-NN (k={best_k})')
             st.pyplot(fig)
 
-            st.write("""
-            **Explicação:**  
-            O K-NN classifica uma transação com base nos k vizinhos mais próximos no espaço das features.  
-            O valor ótimo de k é escolhido com base no melhor F1-Score, equilibrando precisão e recall para dados desbalanceados.
-            """)
         st.subheader("🧠 Rede Neural (MLPClassifier)")
 
-        run_mlp = st.checkbox("Treinar Rede Neural (MLPClassifier)", value=False)
+        run_mlp = st.checkbox("Treinar Rede Neural", value=False)
         if run_mlp:
             from sklearn.neural_network import MLPClassifier
 
             # Parâmetros da rede
-            hidden_layer_sizes = st.slider("Tamanho das camadas ocultas (ex: 1 camada com 20 neurônios)", 5, 100, 20)
+            hidden_layer_sizes = st.slider("Neurónios por camada", 5, 100, 20)
             n_layers = st.slider("Número de camadas ocultas", 1, 3, 1)
             alpha = st.slider("Alpha (regularização)", 0.0001, 0.1, 0.001, step=0.0001)
             max_iter = st.slider("Épocas de treinamento (max_iter)", 100, 1000, 300, step=50)
@@ -1669,7 +1548,7 @@ elif page == "🤖 Machine Learning":
             # Definir arquitetura
             layers = tuple([hidden_layer_sizes] * n_layers)
 
-            with st.spinner("Treinando a rede neural..."):
+            with st.spinner("A treinar a rede neural..."):
                 mlp = MLPClassifier(hidden_layer_sizes=layers, alpha=alpha, max_iter=max_iter, random_state=42)
                 mlp.fit(X_train_resampled, y_train_resampled)
                 y_pred_mlp = mlp.predict(X_test)
@@ -1692,22 +1571,14 @@ elif page == "🤖 Machine Learning":
             st.write("**Relatório de classificação:**")
             st.text(classification_report(y_test, y_pred_mlp, zero_division=0))
 
-            st.write("""
-            **Explicação:**  
-            O MLPClassifier é uma rede neural feedforward com camadas ocultas configuráveis.  
-            Permite capturar padrões complexos e não lineares nos dados de fraude.
-            """)
 
-        with st.expander("🚀 Substituto do AutoML com Random Forest"):
-            st.write("""
-            O Auto-Sklearn foi substituído por RandomForestClassifier para garantir compatibilidade com Python 3.8.
-            Esta abordagem ainda fornece bons resultados com menor custo computacional.
-            """)
+        with st.expander("🚀 Random Forest (substituto ao AutoML)"):
+            st.info("Modelo alternativo ao AutoML, compatível com a versão usada.")
 
             run_rf = st.checkbox("Executar Random Forest", value=False)
 
             if run_rf:
-                with st.spinner("Treinando modelo Random Forest..."):
+                with st.spinner("A treinar modelo Random Forest..."):
                     from sklearn.metrics import classification_report, accuracy_score
 
                     model = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -1986,37 +1857,45 @@ elif page == "🤖 Machine Learning":
         ax.set_title(f'Matriz de Confusão - {model_for_threshold} (Limiar = {custom_threshold})')
         st.pyplot(fig)
 
-# Nova página: Classificação de Transações
 elif page == "🧪 Classificar Transação":
-    st.markdown('<p class="big-font">🧪 Classificação de Nova Transação</p>', unsafe_allow_html=True)
-    st.write("Insira manualmente os dados da transação para verificar se é fraude ou não.")
+    st.markdown('<p class="big-font">🧪 Classificar Transação</p>', unsafe_allow_html=True)
+    st.write("Introduza os dados de uma nova transação e descubra a probabilidade de ela ser considerada suspeita. O sistema dá-lhe um resultado baseado em padrões reais.")
+
+    # Features usadas no modelo
+    selected_features = ["Amount", "V1", "V2", "V3", "V4", "V10"]
 
     # Inputs do utilizador
-    amount = st.number_input("Valor da transação (Amount)", min_value=0.0, max_value=10000.0, value=100.0)
-    v1 = st.slider("V1", -30.0, 30.0, 0.0)
-    v2 = st.slider("V2", -30.0, 30.0, 0.0)
-    v3 = st.slider("V3", -30.0, 30.0, 0.0)
-    v4 = st.slider("V4", -30.0, 30.0, 0.0)
+    input_data = {}
+    for feature in selected_features:
+        input_data[feature] = st.number_input(f"Insere valor para {feature}", value=0.0)
 
-    if st.button("Classificar Transação"):
-        input_df = pd.DataFrame({
-            "Amount": [amount],
-            "V1": [v1],
-            "V2": [v2],
-            "V3": [v3],
-            "V4": [v4]
-        })
+    # Criar DataFrame a partir dos inputs
+    input_df = pd.DataFrame([input_data])
 
-        # Certifique-se de que o modelo e o scaler já foram treinados anteriormente
-        try:
-            input_scaled = scaler.transform(input_df) if 'scaler' in locals() else input_df
-            prediction = model.predict(input_scaled)[0]
-            prediction_proba = model.predict_proba(input_scaled)[0][1]
+    # Preparar os dados de treino
+    X = df[selected_features]
+    y = df["Class"]
 
-            if prediction == 1:
-                st.error(f"🚨 Provável FRAUDE (confiança: {prediction_proba:.2%})")
-            else:
-                st.success(f"✅ Transação legítima (confiança de fraude: {prediction_proba:.2%})")
-        except Exception as e:
-            st.warning("⚠️ O modelo ainda não foi treinado. Treine o modelo primeiro na aba 'Machine Learning'.")
-            st.text(f"Erro: {e}")
+    # Normalizar com StandardScaler
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Treinar modelo de regressão logística
+    from sklearn.linear_model import LogisticRegression
+    model = LogisticRegression(class_weight='balanced', solver='liblinear', random_state=42)
+    model.fit(X_scaled, y)
+
+    # Transformar input do utilizador
+    input_scaled = scaler.transform(input_df)
+
+    # Prever probabilidade de fraude
+    prob_fraude = model.predict_proba(input_scaled)[0][1]
+
+    st.write(f"🔍 **Probabilidade de ser fraude:** {prob_fraude:.4f}")
+
+    # Definir limiar
+    limiar = 0.5
+    if prob_fraude > limiar:
+        st.error("🚨 Transação suspeita de fraude!")
+    else:
+        st.success("✅ Transação legítima.")
