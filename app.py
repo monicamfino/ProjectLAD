@@ -391,8 +391,10 @@ elif page == "📂 Relatórios e Configurações":
         st.subheader("🧪 Comparação Visual de Variáveis")
 
         st.write("""
-        Antes de analisarmos os dados, é importante garantir que diferentes variáveis estão numa escala comparável.
-        Esta comparação visual ajuda a perceber como as transações legítimas e fraudulentas se distribuem em diferentes combinações de variáveis.
+        Antes de analisarmos os dados, é importante garantir que diferentes variáveis estejam numa escala comparável.
+        🔍 Esta visualização permite observar como transações legítimas e fraudulentas se distribuem em função de duas variáveis escolhidas.
+
+        💡 *Nota:* Algumas variáveis podem já ter sido normalizadas ou padronizadas para facilitar a comparação visual.
         """)
 
         st.write("Selecione duas variáveis para visualizar como as transações legítimas e fraudulentas se distribuem.")
