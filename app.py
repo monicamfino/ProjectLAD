@@ -390,6 +390,11 @@ elif page == "📂 Relatórios e Configurações":
     elif sub_page == "🧪 Comparação Visual de Variáveis":
         st.subheader("🧪 Comparação Visual de Variáveis")
 
+        st.write("""
+        Antes de analisarmos os dados, é importante garantir que diferentes variáveis estão numa escala comparável.
+        Esta comparação visual ajuda a perceber como as transações legítimas e fraudulentas se distribuem em diferentes combinações de variáveis.
+        """)
+
         st.write("Selecione duas variáveis para visualizar como as transações legítimas e fraudulentas se distribuem.")
 
         
