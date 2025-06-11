@@ -284,7 +284,7 @@ elif page == "📂 Relatórios e Configurações":
     st.markdown('<p class="big-font">📂 Relatórios e Configurações</p>', unsafe_allow_html=True)
 
     # Definindo sub-páginas
-    sub_page = st.sidebar.radio("Subtópicos", ["📑 Gerar Relatório", "⚙ Configurações Avançadas", "🔄 Normalização e Padronização"])
+    sub_page = st.sidebar.radio("Subtópicos", ["📑 Gerar Relatório", "⚙ Configurações Avançadas", "🧪 Comparação Visual de Variáveis"])
 
     # 📑 Geração de Relatórios Personalizados
     if sub_page == "📑 Gerar Relatório":
@@ -386,117 +386,12 @@ elif page == "📂 Relatórios e Configurações":
             st.write(f"- **Tipo de verificação:** {metodo_analise}")
             st.write(f"- **Regiões monitorizadas:** {', '.join(selected_region)}")
 
-    # 🔄 Normalização e Padronização
-    elif sub_page == "🔄 Normalização e Padronização":
-        st.subheader("🔄 Ajuste dos Dados")
-        
-        st.write("""
-        ## Padronização 
+    #  Normalização e Padronização
+    elif sub_page == "🧪 Comparação Visual de Variáveis":
+        st.subheader("🧪 Comparação Visual de Variáveis")
 
-        A padronização ajusta os valores para que fiquem centrados em 0, com uma variação padrão de 1. 
-        Este tipo de transformação é útil para comparações justas entre diferentes colunas.
-        """)
+        st.write("Selecione duas variáveis para visualizar como as transações legítimas e fraudulentas se distribuem.")
 
-        # Fórmula matemática com LaTeX
-        st.latex(r'Z = \frac{X - \mu}{\sigma}')
-
-        
-        # Demonstração de padronização com os dados
-        with st.expander("🔍 Ver exemplo de padronização"):
-            # Selecionar uma coluna para demonstração
-            selected_column = st.selectbox("Escolha uma coluna para aplicar a padronização::",
-                                          df.select_dtypes(include=['number']).columns)
-            
-            # Calcular média e desvio padrão
-            mean_value = df[selected_column].mean()
-            std_value = df[selected_column].std()
-            
-            # Criar uma amostra de dados padronizados
-            original_data = df[selected_column].head(10).values
-            standardized_data = (original_data - mean_value) / std_value
-            
-            # Mostrar uma comparação
-            comparison_df = pd.DataFrame({
-                "Original": original_data,
-                "Padronizado": standardized_data
-            })
-            
-            st.write("**Comparação dos valores:**")
-            st.write(comparison_df)
-            
-            # Mostrar estatísticas
-            st.write(f"**Média Original:** {mean_value:.4f}")
-            st.write(f"**Desvio Padrão Original:** {std_value:.4f}")
-            st.write(f"**Média dos Dados Padronizados:** {standardized_data.mean():.4f}")
-            st.write(f"**Desvio Padrão dos Dados Padronizados:** {standardized_data.std():.4f}")
-            
-            # Plotar comparação
-            fig, ax = plt.subplots(1, 2, figsize=(10, 4))
-            ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
-            ax[0].set_title("Antes da Padronização")
-            ax[1].hist(standardized_data, bins=10, color='green', alpha=0.7)
-            ax[1].set_title("Depois da Padronização")
-            st.pyplot(fig)
-        
-        st.write("""
-        ## Normalização 
-
-        A normalização transforma os valores para que fiquem entre 0 e 1 (ou entre -1 e 1), sem alterar a sua forma geral.
-        """)
-        
-        # Fórmula matemática com LaTeX
-        st.latex(r"X' = \frac{X - X_{min}}{X_{max} - X_{min}}")
-
-        
-        # Demonstração de normalização com os dados
-        with st.expander("🔍 Ver exemplo de normalização"):
-            # Selecionar uma coluna para demonstração
-            selected_column = st.selectbox("Escolha uma coluna para aplicar a normalização:",
-                                          df.select_dtypes(include=['number']).columns,
-                                          key="normalization_column")
-            
-            # Calcular min e max
-            min_value = df[selected_column].min()
-            max_value = df[selected_column].max()
-            
-            # Criar uma amostra de dados normalizados
-            original_data = df[selected_column].head(10).values
-            normalized_data = (original_data - min_value) / (max_value - min_value)
-            
-            # Mostrar uma comparação
-            comparison_df = pd.DataFrame({
-                "Original": original_data,
-                "Normalizado": normalized_data
-            })
-            
-            st.write("**Comparação dos valores:**")
-            st.write(comparison_df)
-            
-            # Mostrar estatísticas
-            st.write(f"**Valor Mínimo Original:** {min_value:.4f}")
-            st.write(f"**Valor Máximo Original:** {max_value:.4f}")
-            st.write(f"**Valor Mínimo Normalizado:** {normalized_data.min():.4f}")
-            st.write(f"**Valor Máximo Normalizado:** {normalized_data.max():.4f}")
-            
-            # Plotar comparação
-            fig, ax = plt.subplots(1, 2, figsize=(10, 4))
-            ax[0].hist(original_data, bins=10, color='blue', alpha=0.7)
-            ax[0].set_title("Antes da Normalização")
-            ax[1].hist(normalized_data, bins=10, color='red', alpha=0.7)
-            ax[1].set_title("Depois da Normalização")
-            st.pyplot(fig)
-        
-        st.write("""
-        ## Quando aplicar cada um?
-
-    - **Padronização:** Ideal quando os dados têm distribuição próxima da normal ou quando queremos destacar variações em torno da média.
-    - **Normalização:** Útil quando queremos manter todos os valores dentro de uma faixa específica (ex: [0, 1]) — por exemplo, em redes neurais.
-
-    Ambas as técnicas ajudam a preparar os dados para análises mais eficazes.
-        """)
-        
-        # Aplicação prática
-        st.subheader("🧪  Comparação Visual entre Métodos")
         
         # Selecionar duas colunas para visualização
         col1, col2 = st.columns(2)
