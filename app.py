@@ -717,7 +717,7 @@ elif page == "🤖 Machine Learning":
             """)
             
             # Demonstração visual simples
-            st.markdown("####🖼️ Exemplo Visual: Transações Legítimas vs Fraudulentas")
+            st.markdown("🖼️ Exemplo Visual: Transações Legítimas vs Fraudulentas")
             
             fig, ax = plt.subplots(figsize=(6, 4))
             
@@ -747,7 +747,7 @@ elif page == "🤖 Machine Learning":
             """)
             
             # Demonstração visual de clustering
-            st.markdown("#### 🖼️ Exemplo Visual: Agrupamento de Transações")
+            st.markdown(" 🖼️ Exemplo Visual: Agrupamento de Transações")
             
             from sklearn.cluster import KMeans
             
@@ -774,7 +774,7 @@ elif page == "🤖 Machine Learning":
             st.pyplot(fig)
         
         with tab3:
-            st.markdown("### Aprendizagem por Reforço")
+            st.markdown(" Aprendizagem por Reforço")
             st.write("""
             Aqui, o sistema **aprende por tentativa e erro**. Ele testa ações e **recebe recompensas ou penalizações** com base no que acontece. Com o tempo, aprende quais decisões levam aos melhores resultados.
             """)
@@ -782,71 +782,71 @@ elif page == "🤖 Machine Learning":
             st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
                     caption="Ciclo de Aprendizado por Reforço", width=400)
     
-    # Processo de Machine Learning
-    st.subheader("⚙️ Processo de Machine Learning")
+        # Processo de Machine Learning
+        st.subheader("⚙️ Processo de Machine Learning")
     
-    process_steps = {
-        "1. Preparação de Dados": "Recolha, limpeza, normalização e divisão em conjuntos de treinamento/teste",
-        "2. Seleção de Modelo": "Escolha do algoritmo mais adequado para o problema",
-        "3. Treinamento": "Ajuste dos parâmetros do modelo usando dados de treinamento",
-        "4. Validação": "Avaliação do desempenho em dados não vistos anteriormente",
-        "5. Otimização": "Melhoria do modelo ajustando as suas configurações",
-        "6. Implementação": "Colocação do modelo em produção",
-        "7. Monitorização": "Acompanhamento contínuo do desempenho"
-    }
+        process_steps = {
+             "1. Preparação de Dados": "Recolha, limpeza, normalização e divisão em conjuntos de treinamento/teste",
+             "2. Seleção de Modelo": "Escolha do algoritmo mais adequado para o problema",
+             "3. Treinamento": "Ajuste dos parâmetros do modelo usando dados de treinamento",
+             "4. Validação": "Avaliação do desempenho em dados não vistos anteriormente",
+             "5. Otimização": "Melhoria do modelo ajustando as suas configurações",
+             "6. Implementação": "Colocação do modelo em produção",
+             "7. Monitorização": "Acompanhamento contínuo do desempenho"
+          }
     
-    col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
     
-    for i, (step, desc) in enumerate(process_steps.items()):
-        if i < 4:
-            col1.markdown(f"**{step}:** {desc}")
-        else:
-            col2.markdown(f"**{step}:** {desc}")
+        for i, (step, desc) in enumerate(process_steps.items()):
+           if i < 4:
+              col1.markdown(f"**{step}:** {desc}")
+           else:
+              col2.markdown(f"**{step}:** {desc}")
     
-    # Aplicações em detecção de fraude
-    st.subheader("💳 Como o Machine Learning Ajuda a Detetar Fraudes")
+         # Aplicações em detecção de fraudee
+        st.subheader("💳 Como o Machine Learning Ajuda a Detetar Fraudes")
     
-    st.write("""
-    A deteção de fraudes é uma das aplicações mais valiosas do machine learning no setor financeiro. 
-Estes modelos conseguem identificar comportamentos suspeitos que muitas vezes escapam à análise humana.
-
-**Vantagens:**
-- ⚡ Análise em tempo real
-- 📈 Capacidade de adaptação a novos tipos de fraude
-- 🎯 Redução de falsos alarmes
-- 🧠 Processamento de grandes volumes de transações
-
-**Desafios:**
-- ⚖️ Poucas fraudes em comparação com transações normais (desequilíbrio nos dados)
-- 🕵️‍♂️ Novas formas de fraude surgem constantemente
-- ⏱️ Necessidade de decisões rápidas
-- 🔐 Proteção dos dados dos clientes
-    """)
-    
-    # Métricas de avaliação
-    st.subheader("📏 Como Avaliamos se um Modelo é Bom?")
-    
-    metrics = {
-        "Acurácia": "Percentagem total de previsões corretas",
-        "Precisão": "Entre os casos classificados como fraude, quantos realmente são fraude",
-        "Recall (Sensibilidade)": "Entre as fraudes reais, quantas foram detectadas corretamente",
-        "F1-Score": "Equilíbrio entre precisão e recall",
-        "AUC-ROC": "Capacidade de distinguir entre classes (0.5 = aleatório, 1.0 = perfeito)",
-        "Custo de erros": "Impacto financeiro de uma deteção incorreta"
-    }
-    
-    for metric, desc in metrics.items():
-        st.markdown(f"**{metric}**: {desc}")
-    
-    # Demonstração prática
-    st.subheader("🧪 Exemplo Simples de Detecção de Fraudes")
-    
-    with st.expander("Clique para ver uma demonstração simplificada de detecção de fraudes"):
         st.write("""
-        Abaixo mostramos uma simulação de como um modelo pode aprender a distinguir fraudes de transações legítimas.
+          A deteção de fraudes é uma das aplicações mais valiosas do machine learning no setor financeiro. 
+          Estes modelos conseguem identificar comportamentos suspeitos que muitas vezes escapam à análise humana.
 
-⚠️ Este é apenas um exemplo simples, com poucas variáveis, usado apenas para fins educativos.
+          **Vantagens:**
+          - ⚡ Análise em tempo real
+          - 📈 Capacidade de adaptação a novos tipos de fraude
+          - 🎯 Redução de falsos alarmes
+          - 🧠 Processamento de grandes volumes de transações
+
+         **Desafios:**
+          - ⚖️ Poucas fraudes em comparação com transações normais (desequilíbrio nos dados)
+          - 🕵️‍♂️ Novas formas de fraude surgem constantemente
+          - ⏱️ Necessidade de decisões rápidas
+          - 🔐 Proteção dos dados dos clientes
         """)
+    
+        # Métricas de avaliação
+        st.subheader("📏 Como Avaliamos se um Modelo é Bom?")
+    
+        metrics = {
+         "Acurácia": "Percentagem total de previsões corretas",
+         "Precisão": "Entre os casos classificados como fraude, quantos realmente são fraude",
+         "Recall (Sensibilidade)": "Entre as fraudes reais, quantas foram detectadas corretamente",
+         "F1-Score": "Equilíbrio entre precisão e recall",
+         "AUC-ROC": "Capacidade de distinguir entre classes (0.5 = aleatório, 1.0 = perfeito)",
+         "Custo de erros": "Impacto financeiro de uma deteção incorreta"
+        }
+    
+        for metric, desc in metrics.items():
+          st.markdown(f"**{metric}**: {desc}")
+    
+        # Demonstração prática
+        st.subheader("🧪 Exemplo Simples de Detecção de Fraudes")
+    
+        with st.expander("Clique para ver uma demonstração simplificada de detecção de fraudes"):
+         st.write("""
+          Abaixo mostramos uma simulação de como um modelo pode aprender a distinguir fraudes de transações legítimas.
+
+         ⚠️ Este é apenas um exemplo simples, com poucas variáveis, usado apenas para fins educativos.
+         """)
         
         from sklearn.model_selection import train_test_split
         from sklearn.ensemble import RandomForestClassifier
@@ -921,8 +921,8 @@ Estes modelos conseguem identificar comportamentos suspeitos que muitas vezes es
         st.pyplot(fig)
         
         st.write("""
-       📌 **Nota:** Este exemplo foi simplificado para melhor compreensão. 
-Em situações reais, são utilizados muitos mais dados e técnicas para garantir uma deteção mais precisa e justa.
+         📌 **Nota:** Este exemplo foi simplificado para melhor compreensão. 
+         Em situações reais, são utilizados muitos mais dados e técnicas para garantir uma deteção mais precisa e justa.
         """)
     
     with model_tabs[1]:
@@ -1599,21 +1599,15 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
                     st.pyplot(fig)
 
     with model_tabs[2]:
-        st.markdown("## Ridge e Lasso Regression para Detecção de Fraudes")
+        st.markdown("## 🔍 Análise com Ridge e Lasso")
 
         st.write("""
-        ### Regressão Regularizada para Classificação de Fraudes
-
-        Embora Ridge e Lasso são técnicas de regressão, elas podem ser aplicadas para problemas de classificação
-        binária como detecção de fraudes. Neste exemplo, usaremos essas técnicas para prever a variável 'Class'
-        (0: transação legítima, 1: transação fraudulenta).
-        
-        - **Ridge Regression**: Utiliza regularização L2, que penaliza a soma dos quadrados dos coeficientes.
-        - **Lasso Regression**: Utiliza regularização L1, que penaliza a soma dos valores absolutos dos coeficientes e pode reduzir alguns coeficientes a zero.
+       Vamos explorar diferentes formas de prever se uma transação é fraudulenta ou não.  
+    Os modelos apresentados utilizam combinações de variáveis para fazer essa previsão, ajudando-nos a compreender quais são mais relevantes.
         """)
         
         # Seleção de variáveis
-        st.subheader("Configuração do Modelo")
+        st.subheader("⚙️ Configurações Iniciais")
 
         # A variável alvo agora é fixa como "Class"
         target_column = "Class"
@@ -1629,7 +1623,7 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
             correlations = numeric_df.corrwith(df[target_column]).abs().sort_values(ascending=False)
         best_features = correlations[:n_features].index.tolist()
         
-        st.write(f"Features selecionadas (baseadas em correlação com {target_column}):")
+        st.write(f"Variáveis selecionadas (mais associadas com fraudes {target_column}):")
         st.write(best_features)
         
         # Dividir dados
@@ -1642,27 +1636,27 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
         X_scaled = scaler.fit_transform(X)
         
         # Dividir em treino e teste
-        test_size = st.slider("Proporção para teste (%)", 10, 40, 20) / 100
+        test_size = st.slider("Percentagem de dados para teste", 10, 40, 20) / 100
         X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=test_size, random_state=42, stratify=y)
         
         # Configuração dos modelos
-        st.subheader("Parâmetros de Regularização")
+        st.subheader("🔧 Parâmetros dos Modelos")
         
         col1, col2 = st.columns(2)
         with col1:
             alpha_ridge = st.slider(
-                "Alpha para Ridge (força da regularização L2):", 
+                "Ajuste do modelo Ridge",
                 0.01, 10.0, 1.0, 0.01
             )
     
         with col2:
             alpha_lasso = st.slider(
-                "Alpha para Lasso (força da regularização L1):", 
+                "Ajuste do modelo Lasso",
                 0.001, 1.0, 0.01, 0.001
             )
     
         # Treinamento dos modelos
-        with st.spinner("Treinando modelos..."):
+        with st.spinner("A treinar modelos..."):
             # Linear Regression (sem regularização)
             lr = LinearRegression()
             lr.fit(X_train, y_train)
@@ -1709,11 +1703,11 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
                 "Precisão": precision,
                 "Recall": recall, 
                 "F1-Score": f1,
-                "MSE": mse
+                "Erro Médio (MSE)": mse
             }
         
         # Mostrar resultados
-        st.subheader("Resultados dos Modelos")
+        st.subheader("📊 Comparação dos Resultados")
         
         # Criar dataframe de resultados
         results_df = pd.DataFrame({
@@ -1726,23 +1720,23 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
         # Gráfico de barras para F1-Score (melhor métrica para dados desbalanceados)
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.bar(results_df.index, results_df["F1-Score"], color=["blue", "green", "orange"])
-        ax.set_ylabel('F1-Score')
-        ax.set_title('Comparação de Modelos - F1-Score (maior é melhor)')
+        ax.set_ylabel('F1-Score por Modelo')
+        ax.set_title('F1-Score (quanto maior, melhor)')
         plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
         st.pyplot(fig)
         
         # Visualizar coeficientes
-        st.subheader("Coeficientes dos Modelos")
+        st.subheader("📌 Relevância das Variáveis")
         
         coef_df = pd.DataFrame({
-            'Feature': best_features,
+            'Variável': best_features,
             'Linear Regression': lr.coef_,
             f'Ridge (α={alpha_ridge})': ridge.coef_,
             f'Lasso (α={alpha_lasso})': lasso.coef_
         })
         
-        st.write(coef_df.set_index('Feature'))
+        st.write(coef_df.set_index('Variável'))
         
         # Gráfico de coeficientes
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -1758,9 +1752,9 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
         ax.axhline(y=0, color='gray', linestyle='-', alpha=0.3)
         
         # Configurar labels e legendas
-        ax.set_xlabel('Features')
+        ax.set_xlabel('Variável')
         ax.set_ylabel('Coeficientes')
-        ax.set_title('Importância das Features para Detecção de Fraudes')
+        ax.set_title('Importância das Variável para Detecção de Fraudes')
         ax.set_xticks(index)
         ax.set_xticklabels(best_features, rotation=45, ha='right')
         ax.legend()
@@ -1769,7 +1763,7 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
         st.pyplot(fig)
         
         # Matriz de confusão para o melhor modelo
-        st.subheader("Matriz de Confusão")
+        st.subheader("📉 Matriz de Confusão")
         
         # Encontrar o melhor modelo com base no F1-Score
         best_model_name = results_df["F1-Score"].idxmax()
@@ -1782,35 +1776,15 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
         ax.set_ylabel('Real')
         ax.set_title(f'Matriz de Confusão - {best_model_name}')
         st.pyplot(fig)
-        
-        # Explicação sobre Ridge e Lasso para classificação
-        st.subheader("Interpretação")
-        
-        st.write("""
-        ### Aplicação de Ridge e Lasso para Detecção de Fraudes:
-        
-        1. **Interpretação dos Coeficientes**:
-           - Coeficientes positivos: Indicam que valores maiores dessa feature aumentam a probabilidade de fraude
-           - Coeficientes negativos: Indicam que valores maiores dessa feature diminuem a probabilidade de fraude
-           - Coeficientes próximos a zero (especialmente em Lasso): Indicam features menos relevantes para a detecção
-    
-        2. **Comparação dos Modelos**:
-           - **Regressão Linear**: Sem regularização, pode ser mais suscetível a overfitting, especialmente com muitas variáveis
-           - **Ridge**: Reduz todos os coeficientes de forma proporcional, mantendo todas as features
-           - **Lasso**: Tende a realizar seleção de features, eliminando algumas completamente (coeficientes = 0)
-    
-        3. **Por que usar regularização para fraudes?**
-           - Dados de fraude geralmente têm muitas variáveis potencialmente correlacionadas
-           - A regularização ajuda a evitar overfitting em dados de treinamento
-           - Lasso pode identificar automaticamente as variáveis mais importantes para detecção
-        """)
+
     
         # Adicionar thresholding interativo
-        st.subheader("Ajuste de Limiar (Threshold)")
+        st.subheader("🎯 Ajuste de Sensibilidade (Threshold)")
         
         st.write("""
-        Em problemas de classificação desbalanceados como detecção de fraudes, 
-        ajustar o limiar de decisão é crucial para equilibrar falsos positivos e falsos negativos.
+        Pode ajustar a sensibilidade da decisão do modelo.  
+    Um valor mais baixo pode detetar mais fraudes (mas com mais falsos positivos),  
+    enquanto um valor mais alto é mais cauteloso.
         """)
         
         # Escolher um modelo para ajustar o threshold
@@ -1859,7 +1833,7 @@ Em situações reais, são utilizados muitos mais dados e técnicas para garanti
 
 elif page == "🧪 Classificar Transação":
     st.markdown('<p class="big-font">🧪 Classificar Transação</p>', unsafe_allow_html=True)
-    st.write("Introduza os dados de uma nova transação e descubra a probabilidade de ela ser considerada suspeita. O sistema dá-lhe um resultado baseado em padrões reais.")
+    st.write(" Introduza os dados de uma nova transação para saber se ela poderá ser considerada suspeita. O sistema analisa os valores com base em padrões reais já observados em transações anteriores.")
 
     # Features usadas no modelo
     selected_features = ["Amount", "V1", "V2", "V3", "V4", "V10"]
@@ -1867,7 +1841,7 @@ elif page == "🧪 Classificar Transação":
     # Inputs do utilizador
     input_data = {}
     for feature in selected_features:
-        input_data[feature] = st.number_input(f"Insere valor para {feature}", value=0.0)
+        input_data[feature] = st.number_input(f"Insera valor para: {feature}", value=0.0)
 
     # Criar DataFrame a partir dos inputs
     input_df = pd.DataFrame([input_data])
