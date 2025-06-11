@@ -1663,21 +1663,6 @@ elif page == "🤖 Machine Learning":
         
         plt.tight_layout()
         st.pyplot(fig)
-        
-        # Matriz de confusão para o melhor modelo
-        st.subheader("📉 Matriz de Confusão")
-        
-        # Encontrar o melhor modelo com base no F1-Score
-        best_model_name = results_df["F1-Score"].idxmax()
-        best_model_pred = predictions[best_model_name]
-        
-        cm = confusion_matrix(y_test, best_model_pred, labels=[0, 1])
-        fig, ax = plt.subplots(figsize=(6, 4))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, xticklabels=['Legítima', 'Fraude'], yticklabels=['Legítima', 'Fraude'])
-        ax.set_xlabel('Previsto')
-        ax.set_ylabel('Real')
-        ax.set_title(f'Matriz de Confusão - {best_model_name}')
-        st.pyplot(fig)
 
     
         # Adicionar thresholding interativo
