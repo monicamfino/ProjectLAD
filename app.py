@@ -1174,6 +1174,37 @@ elif page == "🤖 Machine Learning":
         
         # Avaliação do modelo
         st.subheader("Avaliação do Modelo")
+
+        with st.expander("🔍 Classificação Manual de Nova Transação"):
+            st.markdown("Insira manualmente os dados da transação para verificar se é fraude ou não.")
+
+            # Inputs básicos
+            amount = st.number_input("Valor da transação (Amount)", min_value=0.0, max_value=10000.0, value=100.0)
+            v1 = st.slider("V1", -30.0, 30.0, 0.0)
+            v2 = st.slider("V2", -30.0, 30.0, 0.0)
+            v3 = st.slider("V3", -30.0, 30.0, 0.0)
+            v4 = st.slider("V4", -30.0, 30.0, 0.0)
+
+            if st.button("Classificar Transação"):
+                input_df = pd.DataFrame({
+                    "Amount": [amount],
+                    "V1": [v1],
+                    "V2": [v2],
+                    "V3": [v3],
+                    "V4": [v4]
+                })
+
+                # Padronizar os dados (se necessário, igual ao usado no treino)
+                input_scaled = scaler.transform(input_df) if 'scaler' in locals() else input_df
+
+                # Usar o melhor modelo (exemplo: Random Forest)
+                prediction = model.predict(input_scaled)[0]
+                prediction_proba = model.predict_proba(input_scaled)[0][1]
+
+                if prediction == 1:
+                    st.error(f"🚨 Provável FRAUDE (confiança: {prediction_proba:.2%})")
+                else:
+                    st.success(f"✅ Transação legítima (confiança de fraude: {prediction_proba:.2%})")
         
         # Fazer previsões
         y_pred = model.predict(X_test)
