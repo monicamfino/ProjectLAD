@@ -65,7 +65,8 @@ page = st.sidebar.radio("Navegação", [
     "📈 Estatísticas",
     "📂 Relatórios e Configurações",
     "🧭 Dados",
-    "🤖 Machine Learning"
+    "🤖 Machine Learning",
+    "🧪 Classificar Transação"
 ])
 
 # 📌 Página Inicial - Visão Geral
@@ -1175,37 +1176,7 @@ elif page == "🤖 Machine Learning":
         # Avaliação do modelo
         st.subheader("Avaliação do Modelo")
 
-        with st.expander("🔍 Classificação Manual de Nova Transação"):
-            st.markdown("Insira manualmente os dados da transação para verificar se é fraude ou não.")
 
-            # Inputs básicos
-            amount = st.number_input("Valor da transação (Amount)", min_value=0.0, max_value=10000.0, value=100.0)
-            v1 = st.slider("V1", -30.0, 30.0, 0.0)
-            v2 = st.slider("V2", -30.0, 30.0, 0.0)
-            v3 = st.slider("V3", -30.0, 30.0, 0.0)
-            v4 = st.slider("V4", -30.0, 30.0, 0.0)
-
-            if st.button("Classificar Transação"):
-                input_df = pd.DataFrame({
-                    "Amount": [amount],
-                    "V1": [v1],
-                    "V2": [v2],
-                    "V3": [v3],
-                    "V4": [v4]
-                })
-
-                # Padronizar os dados (se necessário, igual ao usado no treino)
-                input_scaled = scaler.transform(input_df) if 'scaler' in locals() else input_df
-
-                # Usar o melhor modelo (exemplo: Random Forest)
-                prediction = model.predict(input_scaled)[0]
-                prediction_proba = model.predict_proba(input_scaled)[0][1]
-
-                if prediction == 1:
-                    st.error(f"🚨 Provável FRAUDE (confiança: {prediction_proba:.2%})")
-                else:
-                    st.success(f"✅ Transação legítima (confiança de fraude: {prediction_proba:.2%})")
-        
         # Fazer previsões
         y_pred = model.predict(X_test)
         
@@ -2014,3 +1985,38 @@ elif page == "🤖 Machine Learning":
         ax.set_ylabel('Real')
         ax.set_title(f'Matriz de Confusão - {model_for_threshold} (Limiar = {custom_threshold})')
         st.pyplot(fig)
+
+# Nova página: Classificação de Transações
+elif page == "🧪 Classificar Transação":
+    st.markdown('<p class="big-font">🧪 Classificação de Nova Transação</p>', unsafe_allow_html=True)
+    st.write("Insira manualmente os dados da transação para verificar se é fraude ou não.")
+
+    # Inputs do utilizador
+    amount = st.number_input("Valor da transação (Amount)", min_value=0.0, max_value=10000.0, value=100.0)
+    v1 = st.slider("V1", -30.0, 30.0, 0.0)
+    v2 = st.slider("V2", -30.0, 30.0, 0.0)
+    v3 = st.slider("V3", -30.0, 30.0, 0.0)
+    v4 = st.slider("V4", -30.0, 30.0, 0.0)
+
+    if st.button("Classificar Transação"):
+        input_df = pd.DataFrame({
+            "Amount": [amount],
+            "V1": [v1],
+            "V2": [v2],
+            "V3": [v3],
+            "V4": [v4]
+        })
+
+        # Certifique-se de que o modelo e o scaler já foram treinados anteriormente
+        try:
+            input_scaled = scaler.transform(input_df) if 'scaler' in locals() else input_df
+            prediction = model.predict(input_scaled)[0]
+            prediction_proba = model.predict_proba(input_scaled)[0][1]
+
+            if prediction == 1:
+                st.error(f"🚨 Provável FRAUDE (confiança: {prediction_proba:.2%})")
+            else:
+                st.success(f"✅ Transação legítima (confiança de fraude: {prediction_proba:.2%})")
+        except Exception as e:
+            st.warning("⚠️ O modelo ainda não foi treinado. Treine o modelo primeiro na aba 'Machine Learning'.")
+            st.text(f"Erro: {e}")
