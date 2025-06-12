@@ -674,16 +674,40 @@ elif page == "🤖 Machine Learning":
             ax.legend()
             
             st.pyplot(fig)
-        
+
         with tab3:
-            st.markdown(" Aprendizagem por Reforço")
+            st.markdown("### Aprendizagem por Reforço")
             st.write("""
             Aqui, o sistema **aprende por tentativa e erro**. Ele testa ações e **recebe recompensas ou penalizações** com base no que acontece. Com o tempo, aprende quais decisões levam aos melhores resultados.
             """)
-            
-            st.image("https://cdn-images-1.medium.com/max/800/1*Z2yMvuRTXcMHRdHzKMRM5w.png", 
-                    caption="Ciclo de Aprendizado por Reforço", width=400)
-    
+
+            # Demonstração visual do ciclo de aprendizagem por reforço
+            st.markdown("🖼️ Exemplo Visual: Ciclo de Aprendizagem por Reforço")
+
+            st.write("""
+            Este gráfico representa o ciclo de aprendizagem por reforço, onde um **agente** interage com o **ambiente**, recebe **recompensas** com base nas ações tomadas e ajusta o seu comportamento ao longo do tempo. É um processo iterativo de tentativa e erro que visa maximizar o retorno acumulado.
+            """)
+
+            fig, ax = plt.subplots(figsize=(6, 4))
+
+            # Blocos principais do ciclo
+            ax.text(0.5, 0.8, "Ambiente", ha='center', fontsize=12, bbox=dict(boxstyle="round", facecolor='lightgray'))
+            ax.text(0.2, 0.5, "Agente", ha='center', fontsize=12, bbox=dict(boxstyle="round", facecolor='lightblue'))
+            ax.text(0.8, 0.5, "Estado", ha='center', fontsize=12, bbox=dict(boxstyle="round", facecolor='lightgreen'))
+            ax.text(0.5, 0.2, "Recompensa", ha='center', fontsize=12, bbox=dict(boxstyle="round", facecolor='salmon'))
+
+            # Setas simulando o ciclo
+            ax.annotate("", xy=(0.45, 0.75), xytext=(0.25, 0.55), arrowprops=dict(arrowstyle="->"))
+            ax.annotate("", xy=(0.3, 0.45), xytext=(0.75, 0.45), arrowprops=dict(arrowstyle="->"))
+            ax.annotate("", xy=(0.75, 0.45), xytext=(0.55, 0.25), arrowprops=dict(arrowstyle="->"))
+            ax.annotate("", xy=(0.45, 0.25), xytext=(0.45, 0.75), arrowprops=dict(arrowstyle="->"))
+
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
+            ax.axis("off")
+
+            st.pyplot(fig)
+
         # Processo de Machine Learning
         st.subheader("⚙️ Processo de Machine Learning")
     
