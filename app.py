@@ -602,14 +602,14 @@ elif page == "🤖 Machine Learning":
             st.write("As regras são descobertas pelo algoritmo")
         
         # Tipos de aprendizado
-        st.subheader("📚 Tipos de Aprendizado")
+        st.subheader("📚 Tipos de Aprendizagens")
         
         tab1, tab2, tab3 = st.tabs(["Supervisionado", "Não Supervisionado", "Por Reforço"])
         
         with tab1:
-            st.markdown("### Aprendizado Supervisionado")
+            st.markdown("### Aprendizagem Supervisionado")
             st.write("""
-            Neste tipo de aprendizado, o sistema **aprende com exemplos que já têm a resposta certa**. 
+            Neste tipo de aprendizagem, o sistema **aprende com exemplos que já têm a resposta certa**. 
             Assim, pode depois aplicar esse conhecimento para prever novos casos.
 
             **Exemplos:**
@@ -639,7 +639,7 @@ elif page == "🤖 Machine Learning":
             st.pyplot(fig)
         
         with tab2:
-            st.markdown("### Aprendizado Não Supervisionado")
+            st.markdown("### Aprendizagem Não Supervisionado")
             st.write("""
             Neste caso, o sistema **não sabe as respostas certas**. Ele tenta encontrar **agrupamentos ou padrões escondidos** nos dados por conta própria.
 
@@ -729,7 +729,7 @@ elif page == "🤖 Machine Learning":
         st.subheader("📏 Como Avaliamos se um Modelo é Bom?")
     
         metrics = {
-         "Acurácia": "Percentagem total de previsões corretas",
+         "Accuracy": "Percentagem total de previsões corretas",
          "Precisão": "Entre os casos classificados como fraude, quantos realmente são fraude",
          "Recall (Sensibilidade)": "Entre as fraudes reais, quantas foram detectadas corretamente",
          "F1-Score": "Equilíbrio entre precisão e recall",
@@ -743,8 +743,8 @@ elif page == "🤖 Machine Learning":
         # Demonstração prática
         st.subheader("🧪 Exemplo Simples de Detecção de Fraudes")
     
-        with st.expander("Clique para ver uma demonstração simplificada de detecção de fraudes"):
-         st.write("""
+
+        st.write("""
           Abaixo mostramos uma simulação de como um modelo pode aprender a distinguir fraudes de transações legítimas.
 
          ⚠️ Este é apenas um exemplo simples, com poucas variáveis, usado apenas para fins educativos.
@@ -797,7 +797,7 @@ elif page == "🤖 Machine Learning":
         y_pred = model.predict(X_test)
         
         # Avaliar modelo
-        st.write("**Acurácia do modelo:**", accuracy_score(y_test, y_pred))
+        st.write("**Accuracy do modelo:**", accuracy_score(y_test, y_pred))
         
         # Matriz de confusão
         cm = confusion_matrix(y_test, y_pred, labels=[0, 1])  # Especificamos explicitamente as classes 0 e 1
@@ -906,27 +906,34 @@ elif page == "🤖 Machine Learning":
             if model_type == "Árvore de Decisão":
                 from sklearn import tree
 
-                # Visualização da árvore
                 st.subheader("🌳 Visualização da Árvore")
+
+                # Se o modelo for uma RandomForest, escolher uma das árvores
+                if isinstance(model, RandomForestClassifier):
+                    st.warning("Estás a visualizar uma árvore individual de uma Random Forest.")
+                    tree_idx = st.slider("Escolhe o índice da árvore a visualizar", 0, len(model.estimators_) - 1, 0)
+                    tree_to_plot = model.estimators_[tree_idx]
+                else:
+                    tree_to_plot = model  # Assume que é DecisionTreeClassifier
+
                 fig, ax = plt.subplots(figsize=(16, 6))
                 tree.plot_tree(
-                    model,
+                    tree_to_plot,
                     feature_names=features,
                     class_names=["Legítima", "Fraude"],
                     filled=True,
                     rounded=True,
-                    max_depth=3,  # Limite para visualização
+                    max_depth=3,
                     fontsize=10,
                     ax=ax
                 )
                 st.pyplot(fig)
-                st.write(
-                    "**Nota:** Esta árvore mostra como o modelo toma decisões com base nas variáveis selecionadas.")
+                st.write("**Nota:** Apenas os 3 primeiros níveis da árvore estão visíveis para facilitar a leitura.")
 
                 # Análise do índice Gini
                 st.subheader("📊 Análise do Índice Gini dos Nós da Árvore")
-                gini_values = model.tree_.impurity
-                node_samples = model.tree_.n_node_samples
+                gini_values = tree_to_plot.tree_.impurity
+                node_samples = tree_to_plot.tree_.n_node_samples
                 gini_df = pd.DataFrame({
                     "Nó": range(len(gini_values)),
                     "Índice Gini": gini_values,
@@ -979,7 +986,7 @@ elif page == "🤖 Machine Learning":
             # Exibir resultados
             st.subheader("Comparação: Com vs. Sem PCA")
             results = pd.DataFrame({
-                "Acurácia": [acc_no_pca, acc_pca],
+                "Accuracy": [acc_no_pca, acc_pca],
                 "Tempo de ajuste (s)": [fit_time_no_pca, fit_time_pca]
             }, index=["Sem PCA", "Com PCA"])
             st.write(results)
@@ -991,9 +998,9 @@ elif page == "🤖 Machine Learning":
         # Fazer previsões
         y_pred = model.predict(X_test)
         
-        # Acurácia
+        # Accuracy
         accuracy = accuracy_score(y_test, y_pred)
-        st.write(f"Acurácia: {accuracy:.2f}")
+        st.write(f"Accuracy: {accuracy:.2f}")
         
         # Matriz de confusão
         st.subheader("Matriz de Confusão")
@@ -1081,7 +1088,7 @@ elif page == "🤖 Machine Learning":
                     ada_f1 = f1_score(y_test, y_pred_ada, zero_division=0)
 
                     # Display metrics
-                    st.metric("Acurácia", f"{ada_accuracy:.4f}")
+                    st.metric("Accuracy", f"{ada_accuracy:.4f}")
                     st.metric("Precisão", f"{ada_precision:.4f}")
                     st.metric("Recall", f"{ada_recall:.4f}")
                     st.metric("F1 Score", f"{ada_f1:.4f}")
@@ -1134,7 +1141,7 @@ elif page == "🤖 Machine Learning":
                     xgb_f1 = f1_score(y_test, y_pred_xgb, zero_division=0)
 
                     # Display metrics
-                    st.metric("Acurácia", f"{xgb_accuracy:.4f}")
+                    st.metric("Accuracy", f"{xgb_accuracy:.4f}")
                     st.metric("Precisão", f"{xgb_precision:.4f}")
                     st.metric("Recall", f"{xgb_recall:.4f}")
                     st.metric("F1 Score", f"{xgb_f1:.4f}")
@@ -1161,7 +1168,7 @@ elif page == "🤖 Machine Learning":
             # Create comparison dataframe
             boost_comparison = pd.DataFrame({
                 'Modelo': ['AdaBoost', 'XGBoost'],
-                'Acurácia': [ada_accuracy, xgb_accuracy],
+                'Accuracy': [ada_accuracy, xgb_accuracy],
                 'Precisão': [ada_precision, xgb_precision],
                 'Recall': [ada_recall, xgb_recall],
                 'F1 Score': [ada_f1, xgb_f1]
@@ -1174,7 +1181,7 @@ elif page == "🤖 Machine Learning":
 
             x = np.arange(2)
             width = 0.2
-            metrics = ['Acurácia', 'Precisão', 'Recall', 'F1 Score']
+            metrics = ['Accuracy', 'Precisão', 'Recall', 'F1 Score']
             colors = ['blue', 'green', 'red', 'purple']
 
             for i, metric in enumerate(metrics):
@@ -1239,7 +1246,7 @@ elif page == "🤖 Machine Learning":
 
                     # Store results
                     svm_results[kernel] = {
-                        'Acurácia': svm_accuracy,
+                        'Accuracy': svm_accuracy,
                         'Precisão': svm_precision,
                         'Recall': svm_recall,
                         'F1 Score': svm_f1,
@@ -1320,7 +1327,7 @@ elif page == "🤖 Machine Learning":
                 
                 # Display metrics
                 col1, col2 = st.columns(2)
-                col1.metric("Acurácia", f"{nb_accuracy:.4f}")
+                col1.metric("Accuracy", f"{nb_accuracy:.4f}")
                 col1.metric("Precisão", f"{nb_precision:.4f}")
                 col2.metric("Recall", f"{nb_recall:.4f}")
                 col2.metric("F1 Score", f"{nb_f1:.4f}")
@@ -1372,7 +1379,7 @@ elif page == "🤖 Machine Learning":
                 
                 # Display metrics with custom threshold
                 col1, col2 = st.columns(2)
-                col1.metric("Acurácia (Limiar)", f"{custom_accuracy:.4f}")
+                col1.metric("Accuracy (Limiar)", f"{custom_accuracy:.4f}")
                 col1.metric("Precisão (Limiar)", f"{custom_precision:.4f}")
                 col2.metric("Recall (Limiar)", f"{custom_recall:.4f}")
                 col2.metric("F1 Score (Limiar)", f"{custom_f1:.4f}")
@@ -1456,7 +1463,7 @@ elif page == "🤖 Machine Learning":
                 y_pred_mlp = mlp.predict(X_test)
 
             # Avaliação
-            st.write(f"Acurácia: {accuracy_score(y_test, y_pred_mlp):.4f}")
+            st.write(f"Accuracy: {accuracy_score(y_test, y_pred_mlp):.4f}")
             st.write(f"F1-Score: {f1_score(y_test, y_pred_mlp, zero_division=0):.4f}")
 
             # Matriz de confusão
@@ -1488,7 +1495,7 @@ elif page == "🤖 Machine Learning":
 
                     y_pred_rf = model.predict(X_test)
                     accuracy = accuracy_score(y_test, y_pred_rf)
-                    st.write(f"**Acurácia Random Forest:** {accuracy:.4f}")
+                    st.write(f"**Accuracy Random Forest:** {accuracy:.4f}")
 
                     st.text("Relatório de Classificação - Random Forest")
                     st.text(classification_report(y_test, y_pred_rf, zero_division=0))
@@ -1601,7 +1608,7 @@ elif page == "🤖 Machine Learning":
             mse = mean_squared_error(y_test, y_pred_proba)
             
             results[name] = {
-                "Acurácia": accuracy,
+                "Accuracy": accuracy,
                 "Precisão": precision,
                 "Recall": recall, 
                 "F1-Score": f1,
@@ -1704,7 +1711,7 @@ elif page == "🤖 Machine Learning":
         
         # Exibir métricas com threshold personalizado
         col1, col2 = st.columns(2)
-        col1.metric("Acurácia", f"{custom_accuracy:.4f}")
+        col1.metric("Accuracy", f"{custom_accuracy:.4f}")
         col1.metric("Precisão", f"{custom_precision:.4f}")
         col2.metric("Recall", f"{custom_recall:.4f}")
         col2.metric("F1-Score", f"{custom_f1:.4f}")
